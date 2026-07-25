@@ -6,10 +6,10 @@ import { Input } from "@/components/ui/input";
 
 export function Hero() {
   const bands = [
-    { text: "Create Living Profile", bg: "#9674FF" },
-    { text: "Sync GitHub Work", bg: "#7140DB" },
-    { text: "Verify Capabilities", bg: "#5123A7" },
-    { text: "Book Interviews", bg: "#351478" }
+    { text: "Sync GitHub Work", bg: "#2B0A66", side: "left", startY: 60, endY: 420 },
+    { text: "Verify Capabilities", bg: "#4E2A9D", side: "right", startY: 150, endY: 330 },
+    { text: "Build Living Profile", bg: "#7140DB", side: "right", startY: 240, endY: 240 },
+    { text: "Fast-Track Interviews", bg: "#9674FF", side: "right", startY: 330, endY: 150 }
   ];
 
   const companies = [
@@ -73,69 +73,73 @@ export function Hero() {
       </div>
 
       <div className="relative w-full h-[400px] mt-8">
-        {/* Abstract SVG Background with Angled Paths */}
+        {/* Intertwined Overlapping Paths Background */}
         <div className="absolute inset-0 w-full h-full z-0">
           <svg 
             width="100%" 
             height="100%" 
-            viewBox="0 0 1440 400" 
-            preserveAspectRatio="none"
+            viewBox="0 0 3000 400" 
+            preserveAspectRatio="xMinYMid slice"
             className="absolute inset-0"
           >
-            <defs>
-              <path id="path-0" d="M -100,20 L 150,20 L 300,50 L 1500,50" fill="none" />
-              <path id="path-1" d="M -100,20 L 150,20 L 300,150 L 1500,150" fill="none" />
-              <path id="path-2" d="M -100,20 L 150,20 L 300,250 L 1500,250" fill="none" />
-              <path id="path-3" d="M -100,20 L 150,20 L 300,350 L 1500,350" fill="none" />
-            </defs>
-
-            {/* Solid Bands */}
-            <path d="M 0,-100 L 150,-100 L 350,0 L 1500,0 L 1500,100 L 300,100 L 100,0 L 0,0 Z" fill={bands[0].bg} />
-            <path d="M 0,0 L 100,0 L 300,100 L 1500,100 L 1500,200 L 250,200 L 50,0 L 0,0 Z" fill={bands[1].bg} />
-            <path d="M 0,0 L 50,0 L 250,200 L 1500,200 L 1500,300 L 200,300 L 0,0 Z" fill={bands[2].bg} />
-            <path d="M 0,0 L 0,0 L 200,300 L 1500,300 L 1500,400 L 150,400 L 0,100 Z" fill={bands[3].bg} />
-
-            <line x1="400" y1="50" x2="400" y2="350" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
+            {/* Band 1 (Darkest) - Back layer */}
+            <path id="path-0" d="M -100,60 L 350,60 L 710,420 L 3000,420" fill="none" stroke="#2B0A66" strokeWidth="56" strokeLinejoin="round" />
+            
+            {/* Band 2 (Dark) - Back layer */}
+            <path id="path-1" d="M -100,150 L 250,150 L 430,330 L 3000,330" fill="none" stroke="#4E2A9D" strokeWidth="56" strokeLinejoin="round" />
+            
+            {/* Band 3 (Medium) - Middle layer (straight) */}
+            <path id="path-2" d="M -100,240 L 3000,240" fill="none" stroke="#7140DB" strokeWidth="56" strokeLinejoin="round" />
+            
+            {/* Band 4 (Light) - Front layer (angles up) */}
+            <path id="path-3" d="M -100,330 L 150,330 L 330,150 L 3000,150" fill="none" stroke="#9674FF" strokeWidth="56" strokeLinejoin="round" />
           </svg>
 
           {/* Moving Dots */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1440 400" preserveAspectRatio="none">
-             <circle r="12" fill="white" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.1))">
-               <animateMotion dur="8s" repeatCount="indefinite" path="M -100,-50 L 150,-50 L 350,50 L 1500,50" />
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 3000 400" preserveAspectRatio="xMinYMid slice">
+             <circle r="10" fill="white" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.2))">
+               <animateMotion dur="12s" repeatCount="indefinite" path="M -100,60 L 350,60 L 710,420 L 3000,420" />
              </circle>
-             <circle r="12" fill="white" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.1))">
-               <animateMotion dur="9s" repeatCount="indefinite" begin="2s" path="M -100,0 L 100,0 L 300,150 L 1500,150" />
+             <circle r="10" fill="white" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.2))">
+               <animateMotion dur="13s" repeatCount="indefinite" begin="2s" path="M -100,150 L 250,150 L 430,330 L 3000,330" />
              </circle>
-             <circle r="12" fill="white" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.1))">
-               <animateMotion dur="10s" repeatCount="indefinite" begin="1s" path="M -100,0 L 50,0 L 250,250 L 1500,250" />
+             <circle r="10" fill="white" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.2))">
+               <animateMotion dur="11s" repeatCount="indefinite" begin="1s" path="M -100,240 L 3000,240" />
+             </circle>
+             <circle r="10" fill="white" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.2))">
+               <animateMotion dur="12.5s" repeatCount="indefinite" begin="3s" path="M -100,330 L 150,330 L 330,150 L 3000,150" />
              </circle>
           </svg>
         </div>
 
-        <div className="absolute inset-0 w-full h-full z-10 flex items-center">
-          <div className="max-w-7xl mx-auto px-6 w-full relative h-full">
-            
-            <div className="absolute left-6 md:left-[300px] h-full flex flex-col justify-between py-[38px]">
-              {bands.map((band, i) => (
-                <motion.div 
-                  key={i} 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + (i * 0.1) }}
-                  className="flex items-center gap-6 h-[100px] -mt-[50px] relative top-[50px]"
-                >
-                  <div className="relative flex items-center justify-center">
-                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm z-10">
-                      <div className="w-2.5 h-2.5 rounded-full bg-white shadow-sm" />
+        {/* Text Labels overlaid exactly on the paths */}
+        <div className="absolute inset-0 w-full h-full z-10 pointer-events-none overflow-hidden">
+          <div className="absolute inset-0 h-full w-full">
+              {bands.map((band, i) => {
+                const isLeft = band.side === "left";
+                const yPos = isLeft ? band.startY : band.endY;
+                
+                return (
+                  <motion.div 
+                    key={i} 
+                    initial={{ opacity: 0, x: isLeft ? -20 : 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + (i * 0.1) }}
+                    className={`absolute flex items-center gap-4 h-[56px] pointer-events-auto ${isLeft ? 'left-6 md:left-24' : 'right-6 md:right-24 flex-row-reverse'}`}
+                    style={{ top: yPos - 28 }} // -28 to center the 56px high div on the path
+                  >
+                    <div className="relative flex items-center justify-center">
+                      <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm z-10">
+                        <div className="w-2 h-2 rounded-full bg-white shadow-sm" />
+                      </div>
                     </div>
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight drop-shadow-sm">
-                    {band.text}
-                  </h3>
-                </motion.div>
-              ))}
+                    <h3 className="text-lg md:text-xl font-bold text-white tracking-tight drop-shadow-md whitespace-nowrap">
+                      {band.text}
+                    </h3>
+                  </motion.div>
+                );
+              })}
             </div>
-          </div>
         </div>
       </div>
 
