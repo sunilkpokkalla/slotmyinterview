@@ -143,31 +143,33 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Companies Logo Strip (Clean White Design) */}
-      <div className="w-full bg-white relative z-20 mt-12 pb-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <p className="text-sm font-medium text-slate-500 mb-6">
+      <div className="mt-20 md:mt-32 w-full relative z-10 pb-20 overflow-hidden">
+          <p className="text-sm font-semibold text-slate-400 mb-10 tracking-widest text-center uppercase">
             Trusted by <strong className="text-slate-700">10,000+</strong> AI engineering teams
           </p>
-          <div className="flex flex-wrap border border-slate-200 rounded-sm overflow-hidden">
-            {companies.map((company, idx) => (
-              <motion.div
-                key={company}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 + (idx * 0.1) }}
-                className={`flex-1 min-w-[140px] md:min-w-[160px] py-8 px-4 flex items-center justify-center border-slate-200 ${
-                  idx !== companies.length - 1 ? 'border-r' : ''
-                } ${idx > 2 ? 'border-t md:border-t-0' : ''}`}
-              >
-                <span className="text-lg md:text-xl font-bold text-slate-500 uppercase tracking-wider opacity-80 hover:opacity-100 transition-opacity grayscale cursor-pointer">
-                  {company}
-                </span>
-              </motion.div>
-            ))}
+          
+          <div className="relative flex overflow-hidden w-full max-w-[100vw]">
+            {/* Edge Fade Masks */}
+            <div className="absolute left-0 top-0 bottom-0 w-32 md:w-64 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-32 md:w-64 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+            
+            {/* Infinite Marquee Track */}
+            <motion.div
+              className="flex items-center w-max"
+              animate={{ x: ["0%", "-50%"] }}
+              transition={{ repeat: Infinity, ease: "linear", duration: 40 }}
+            >
+              {/* Duplicate array multiple times to ensure seamless infinite looping */}
+              {[...companies, ...companies, ...companies, ...companies].map((company, idx) => (
+                <div key={idx} className="flex-none px-12 md:px-24">
+                  <span className="text-xl md:text-2xl font-extrabold text-slate-300 uppercase tracking-[0.2em] hover:text-slate-500 transition-colors duration-300">
+                    {company}
+                  </span>
+                </div>
+              ))}
+            </motion.div>
           </div>
         </div>
-      </div>
       
     </section>
   );
