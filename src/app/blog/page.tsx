@@ -3,8 +3,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, BookOpen } from 'lucide-react';
 import { BlogCover } from '@/components/blog/blog-cover';
-import fs from 'fs';
-import path from 'path';
+import posts from '@/data/blog-posts.json';
 
 export const metadata = {
   title: 'Blog & Insights | SlotMyInterview',
@@ -12,16 +11,6 @@ export const metadata = {
 };
 
 export default function BlogIndexPage() {
-  // Read local JSON file (simulating a database/CMS)
-  const dataPath = path.join(process.cwd(), 'src/data/blog-posts.json');
-  let posts = [];
-  try {
-    const fileContents = fs.readFileSync(dataPath, 'utf8');
-    posts = JSON.parse(fileContents);
-  } catch (error) {
-    console.error("Could not load blog posts:", error);
-  }
-
   return (
     <div className="min-h-screen bg-[#f8f9fc] flex flex-col pt-24">
       {/* Header */}

@@ -1,24 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
-import fs from 'fs';
-import path from 'path';
 import { ArrowLeft, Calendar, Tag, Share2, Globe, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BlogCover } from '@/components/blog/blog-cover';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
+import posts from '@/data/blog-posts.json';
 
 // 1. Fetch data helper
 function getPost(slug: string) {
-  const dataPath = path.join(process.cwd(), 'src/data/blog-posts.json');
-  try {
-    const fileContents = fs.readFileSync(dataPath, 'utf8');
-    const posts = JSON.parse(fileContents);
-    return posts.find((p: any) => p.slug === slug) || null;
-  } catch (error) {
-    console.error("Could not load blog posts:", error);
-    return null;
-  }
+  return posts.find((p: any) => p.slug === slug) || null;
 }
 
 // 2. Generate dynamic SEO metadata
@@ -50,16 +41,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 // 3. Optional: Generate static params at build time for fast routing
 export async function generateStaticParams() {
-  const dataPath = path.join(process.cwd(), 'src/data/blog-posts.json');
-  try {
-    const fileContents = fs.readFileSync(dataPath, 'utf8');
-    const posts = JSON.parse(fileContents);
-    return posts.map((post: any) => ({
-      slug: post.slug,
-    }));
-  } catch (error) {
-    return [];
-  }
+  return posts.map((post: any) => ({
+    slug: post.slug,
+  }));
 }
 
 // 4. The Page Component
