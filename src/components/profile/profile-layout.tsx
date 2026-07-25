@@ -6,7 +6,7 @@ import {
   GraduationCap, 
   MapPin, 
   GitBranch, 
-  Linkedin, 
+  Link as LinkIcon, 
   Mail,
   Download,
   Code
@@ -60,7 +60,7 @@ export function ProfileLayout({ candidate }: ProfileLayoutProps) {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } }
   };
 
   return (
@@ -118,7 +118,7 @@ export function ProfileLayout({ candidate }: ProfileLayoutProps) {
                     target="_blank"
                     className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition-colors"
                   >
-                    <Linkedin className="w-4 h-4" />
+                    <LinkIcon className="w-4 h-4" />
                     LinkedIn
                   </Link>
                   <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors ml-auto">
