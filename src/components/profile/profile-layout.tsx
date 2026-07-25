@@ -80,6 +80,7 @@ export function ProfileLayout({ candidate }: ProfileLayoutProps) {
                   src={candidate.avatarUrl || "https://ui-avatars.com/api/?name=" + encodeURIComponent(candidate.name) + "&size=256&background=0D8ABC&color=fff"}
                   alt={candidate.name}
                   fill
+                  sizes="128px"
                   className="rounded-full object-cover border-4 border-white shadow-md"
                 />
               </div>
