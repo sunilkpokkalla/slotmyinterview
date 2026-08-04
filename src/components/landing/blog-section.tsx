@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { BlogCover } from "@/components/blog/blog-cover";
 import { useEffect, useState } from "react";
@@ -23,24 +22,21 @@ export function BlogSection() {
   if (blogPosts.length === 0) return null;
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-ink-0 border-t border-hair">
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900"
-          >
-            Master Your Technical Hiring Strategy
-          </motion.h2>
+          <div>
+            <span className="eyebrow">Insights</span>
+            <h2 className="mt-4 text-3xl sm:text-5xl font-bold tracking-tight text-fg-0">
+              Technical hiring <em>briefings.</em>
+            </h2>
+          </div>
           <div className="flex gap-4">
-            <Link href="/blog">
-              <Button variant="outline" size="icon" className="rounded-full w-12 h-12 border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-colors">
-                <ArrowRight className="w-5 h-5 text-slate-600" />
-              </Button>
+            <Link href="/blog" className="btn btn-ghost flex items-center gap-2">
+              <span>View all articles</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
@@ -57,7 +53,7 @@ export function BlogSection() {
               className="group flex flex-col cursor-pointer h-full"
             >
               {/* Image Container with Dynamic BlogCover */}
-              <Link href={`/blog/${post.slug}`} className="block relative w-full aspect-[4/3] rounded-2xl overflow-hidden mb-6 bg-slate-950 border border-slate-200 shadow-sm transition-transform duration-500 group-hover:-translate-y-2 group-hover:shadow-xl">
+              <Link href={`/blog/${post.slug}`} className="block relative w-full aspect-[4/3] rounded-2xl overflow-hidden mb-6 bg-slate-950 border border-hair-2 shadow-2xl transition-transform duration-500 group-hover:-translate-y-2">
                 <BlogCover title={post.title} slug={post.slug} className="w-full h-full transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
                   <ArrowUpRight className="w-5 h-5 text-white" />
@@ -66,22 +62,22 @@ export function BlogSection() {
 
               {/* Content Container */}
               <div className="flex flex-col flex-1">
-                <div className="flex items-center gap-3 mb-3 text-sm font-semibold text-[#6B47ED]">
+                <div className="flex items-center gap-3 mb-3 text-xs font-mono font-medium text-purple-400">
                   <span>{post.tag}</span>
                 </div>
                 
                 <Link href={`/blog/${post.slug}`}>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-3 leading-tight group-hover:text-[#6B47ED] transition-colors line-clamp-2">
+                  <h3 className="text-xl font-bold text-fg-0 mb-3 leading-tight group-hover:text-purple-400 transition-colors line-clamp-2">
                     {post.title}
                   </h3>
                 </Link>
                 
-                <p className="text-slate-500 text-base leading-relaxed mb-6 line-clamp-3 flex-1">
+                <p className="text-fg-2 text-sm leading-relaxed mb-6 line-clamp-3 flex-1">
                   {post.description}
                 </p>
 
-                <div className="mt-auto pt-4 border-t border-slate-100">
-                  <Link href={`/blog/${post.slug}`} className="inline-flex items-center text-sm font-bold text-slate-900 group-hover:text-[#6B47ED] transition-colors">
+                <div className="mt-auto pt-4 border-t border-hair-2">
+                  <Link href={`/blog/${post.slug}`} className="inline-flex items-center text-sm font-semibold text-fg-1 group-hover:text-purple-400 transition-colors">
                     Read the article
                     <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </Link>
