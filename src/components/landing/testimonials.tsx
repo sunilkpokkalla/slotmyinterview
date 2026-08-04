@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const testimonials = [
   {
     id: 1,
-    quote: "I didn't even realize how much time we wasted screening resumes until we started using SlotMyInterview. Seeing verified GitHub work upfront completely changed our hiring engine.",
+    quote: "Resume screening is dead. SlotMyInterview's code index checks let us bypass resume review entirely. We filter candidates by verified system density metrics and lock calls in seconds.",
     name: "Sarah Jenkins",
     title: "VP of Engineering @ TechFlow",
     image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop",
@@ -14,7 +14,7 @@ const testimonials = [
   },
   {
     id: 2,
-    quote: "The ability to instantly assign real-world AI challenges and book interviews with candidates who actually deliver has cut our time-to-hire by 60%.",
+    quote: "Our candidates love this. No generic leetcode puzzles. They solve a real-world sandbox challenge, prove their capabilities, and book directly onto our calendar without recruiter outreach.",
     name: "Marcus Chen",
     title: "CTO @ DataSync",
     image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800&auto=format&fit=crop",
@@ -22,7 +22,7 @@ const testimonials = [
   },
   {
     id: 3,
-    quote: "Traditional CVs for AI engineers are obsolete. SlotMyInterview gives us the deep visibility into a candidate's actual capabilities that we always needed.",
+    quote: "We caught three proxy candidates trying to bypass our screening checks thanks to SlotMyInterview's keystroke biometric engine. This is the only platform we trust.",
     name: "Elena Rodriguez",
     title: "Head of AI @ Nexus",
     image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=800&auto=format&fit=crop",
@@ -48,7 +48,7 @@ export function Testimonials() {
         
         {/* Header */}
         <div className="mb-12">
-          <span className="eyebrow">Trust</span>
+          <span className="eyebrow">Proven Success</span>
           <h2 className="mt-4 text-3xl sm:text-5xl font-bold tracking-tight text-fg-0">
             Hiring managers <em>agree.</em>
           </h2>
@@ -81,7 +81,7 @@ export function Testimonials() {
             {/* Right: Quote Content */}
             <div className="w-full md:w-2/3 flex flex-col justify-between h-full py-4">
               <div>
-                {/* Pagination Dots */}
+                {/* Pagination Docs */}
                 <div className="flex gap-2 mb-6">
                   {testimonials.map((_, idx) => (
                     <button 

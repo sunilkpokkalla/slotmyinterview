@@ -14,17 +14,17 @@ export function Hero() {
       <div className="wrap relative z-10 flex flex-col items-center text-center">
         
         {/* Eyebrow */}
-        <span className="eyebrow">Capability-Based Hiring</span>
+        <span className="eyebrow">Category Definition: The Proof Economy</span>
         
         {/* Headline */}
-        <h1 className="mt-6 text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight max-w-4xl leading-[1.1] text-fg-0">
-          Hire verified AI talent. <br />
-          <em>Skip the resume vetting.</em>
+        <h1 className="mt-6 text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight max-w-5xl leading-[1.1] text-fg-0">
+          Replace resumes with proof. <br />
+          <em>The Verified Talent Ledger.</em>
         </h1>
         
         {/* Description */}
-        <p className="mt-6 text-lg sm:text-xl text-fg-2 max-w-2xl text-pretty leading-relaxed">
-          The first verified portfolio and interview marketplace. Watch elite AI engineers move seamlessly from verified GitHub histories straight into your interview calendar.
+        <p className="mt-6 text-lg sm:text-xl text-fg-2 max-w-3xl text-pretty leading-relaxed">
+          Say goodbye to fake profiles and AI-generated resumes. SlotMyInterview compiles and indexes developer repositories, validates problem-solving inside secure sandboxes, and drops verified capability profiles straight onto your hiring calendar.
         </p>
 
         {/* Input form */}
@@ -37,11 +37,11 @@ export function Hero() {
               className="flex-1 px-4 py-3 rounded-lg text-sm bg-transparent outline-none border-0 text-fg-0 font-mono placeholder:text-fg-3"
             />
             <button type="submit" className="btn btn-accent whitespace-nowrap text-sm px-6 py-3">
-              Get early access
+              Start Vetting Free
             </button>
           </form>
           <p className="mt-3 text-xs text-fg-3 font-mono">
-            Join 12,000+ engineers and hiring managers already using SlotMyInterview.
+            Direct calendar scheduling integrations included. Zero recruiter outreach needed.
           </p>
         </div>
 
@@ -50,13 +50,13 @@ export function Hero() {
           
           {/* Left: Terminal Vetting Console (7 cols) */}
           <div className="md:col-span-7 bezel-outer">
-            <div className="bezel-inner h-full flex flex-col font-mono text-xs text-fg-2 min-h-[300px]">
+            <div className="bezel-inner h-full flex flex-col font-mono text-xs text-fg-2 min-h-[340px]">
               
               {/* Header */}
               <div className="flex items-center justify-between pb-4 border-b border-hair-2 mb-4">
                 <div className="flex items-center gap-2">
                   <TerminalIcon className="w-4 h-4 text-purple-400" />
-                  <span className="font-semibold text-fg-0">vetting-agent-daemon</span>
+                  <span className="font-semibold text-fg-0">proof-ledger-daemon v1.0.4</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
@@ -68,24 +68,29 @@ export function Hero() {
               {/* Console logs */}
               <div className="flex-1 flex flex-col gap-2">
                 <div className="flex gap-2">
-                  <span className="text-purple-400">$</span>
-                  <span className="text-fg-0">slotmyinterview verify-identity --user @kyle-ml-dev</span>
+                  <span className="text-purple-400">❯</span>
+                  <span className="text-fg-0">slotmyinterview verify-ledger --user @kyle-ml-dev</span>
                 </div>
-                <div className="text-fg-3">✓ Checked OAuth identity against active GPG commit signing keys</div>
-                <div className="flex gap-2 mt-1">
-                  <span className="text-purple-400">$</span>
-                  <span className="text-fg-0">slotmyinterview analyze-repos --min-stars 50</span>
-                </div>
-                <div className="text-fg-3">↳ Found 3 candidate repositories (Python, Rust, TypeScript)</div>
-                <div className="text-fg-3">↳ Repository `llm-agent-router` shows high algorithmic depth</div>
-                <div className="text-emerald-400 font-semibold flex items-center gap-1.5 mt-1">
-                  <CheckCircle className="w-3.5 h-3.5" />
-                  <span>VETTING PASSED: Verified code profile ready at slotmyinterview.com/u/kyle</span>
-                </div>
+                <div className="text-fg-3">✓ Checking GPG commit signature keys and identity bindings...</div>
                 
-                <div className="mt-4 pt-4 border-t border-hair-2 flex items-center justify-between">
-                  <span className="text-fg-3">Automatic booking ready</span>
-                  <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px]">Active Integration</span>
+                <div className="flex gap-2 mt-1">
+                  <span className="text-purple-400">❯</span>
+                  <span className="text-fg-0">slotmyinterview compile-ast --depth-audit</span>
+                </div>
+                <div className="text-fg-3">↳ Found active repositories (Rust, TypeScript, Python)</div>
+                <div className="text-fg-3">↳ AST Complexity Index: 8.7/10 (High System Concurrency Density)</div>
+                <div className="text-fg-3">↳ Checked dependencies: Zero critical security exposures in public PRs</div>
+
+                <div className="flex gap-2 mt-1">
+                  <span className="text-purple-400">❯</span>
+                  <span className="text-fg-0">slotmyinterview analyze-biometrics --keystroke-cadence</span>
+                </div>
+                <div className="text-fg-3">↳ Keystroke Dynamics validation matched profile profile: 99.8% match</div>
+                <div className="text-fg-3">↳ Plagiarism check: 0.8% overlap (100% authentic code authorship)</div>
+                
+                <div className="text-emerald-400 font-semibold flex items-center gap-1.5 mt-2">
+                  <CheckCircle className="w-3.5 h-3.5" />
+                  <span>LEDGER VERIFICATION PASSED: Trust Score 945/1000 generated.</span>
                 </div>
               </div>
 
@@ -104,7 +109,7 @@ export function Hero() {
                   </div>
                   <div>
                     <h4 className="text-base font-semibold text-fg-0">Kyle M.</h4>
-                    <p className="text-xs text-fg-3 font-mono">Senior AI & Infrastructure Engineer</p>
+                    <p className="text-xs text-fg-3 font-mono">Senior Distributed Systems Engineer</p>
                   </div>
                 </div>
 
@@ -112,26 +117,27 @@ export function Hero() {
                 <div className="flex flex-col gap-3">
                   <div className="p-3 rounded-lg bg-white/[0.02] border border-hair flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-fg-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg>
-                      <span className="text-sm font-medium text-fg-1">GitHub Score</span>
+                      <svg className="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg>
+                      <span className="text-sm font-medium text-fg-1">Trust Score Ledger</span>
                     </div>
-                    <span className="font-mono text-emerald-400 font-bold">98 / 100</span>
+                    <span className="font-mono text-emerald-400 font-bold">945 / 1000</span>
                   </div>
 
                   <div className="p-3 rounded-lg bg-white/[0.02] border border-hair flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <FileCode className="w-4 h-4 text-fg-2" />
-                      <span className="text-sm font-medium text-fg-1">Verified PRs</span>
+                      <FileCode className="w-4 h-4 text-purple-400" />
+                      <span className="text-sm font-medium text-fg-1">Keystroke Validation</span>
                     </div>
-                    <span className="font-mono text-fg-0">12 Merged</span>
+                    <span className="font-mono text-fg-0">99.8% Match</span>
                   </div>
 
                   <div className="p-3 rounded-lg bg-white/[0.02] border border-hair flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <ShieldAlert className="w-4 h-4 text-fg-2" />
-                      <span className="text-sm font-medium text-fg-1">Identity Check</span>
+                      <ShieldAlert className="w-4 h-4 text-purple-400" />
+                      <span className="text-sm font-medium text-fg-1">Plagiarism Index</span>
+                      <span className="text-[10px] text-fg-3 font-mono">(&lt; 1%)</span>
                     </div>
-                    <span className="font-mono text-emerald-400 font-semibold">100% Passed</span>
+                    <span className="font-mono text-emerald-400 font-semibold">Verified Safe</span>
                   </div>
                 </div>
               </div>
