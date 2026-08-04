@@ -1,66 +1,68 @@
-import { Button } from "@/components/ui/button";
-import { CheckCircle2, GitCommit, GitPullRequest, Code2 } from "lucide-react";
+import { CheckCircle2, GitCommit, GitPullRequest } from "lucide-react";
 
 export default function LivingPortfoliosPage() {
   return (
-    <div className="min-h-screen bg-[#F8F9FC] pt-32 pb-24">
+    <div className="min-h-screen bg-ink-0 pt-32 pb-24 border-t border-hair">
       {/* Hero Section */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-24">
+      <div className="max-w-7xl mx-auto px-6 mb-24">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7140DB]/10 text-[#7140DB] font-semibold text-sm mb-6">
-            <Code2 className="w-4 h-4" />
-            Core Feature
-          </div>
-          <h1 className="text-5xl md:text-6xl font-extrabold text-[#0F1115] tracking-tight mb-6 leading-tight">
-            The resume is dead.<br />
-            Meet the <span className="text-[#7140DB]">Living Portfolio.</span>
+          <span className="eyebrow">Cryptographic Passports</span>
+          <h1 className="text-5xl md:text-6xl font-extrabold text-fg-0 tracking-tight mb-6 mt-6 leading-tight">
+            Replace resumes with proof.<br />
+            Meet the <em>Verifiable Skill Passport.</em>
           </h1>
-          <p className="text-xl text-slate-500 font-medium leading-relaxed mb-10">
-            A real-time, constantly updating reflection of a candidate's actual engineering capabilities, automatically synced with their daily commits and merged pull requests.
+          <p className="text-xl text-fg-2 leading-relaxed mb-10">
+            A dynamic, continually updating record of a candidate's actual engineering capabilities, automatically synced with AST codebase analysis and sandbox scores.
           </p>
           <div className="flex justify-center gap-4">
-            <Button className="bg-[#0A0C10] hover:bg-[#1a1f29] text-white rounded-xl px-8 h-14 text-lg font-bold">
-              View an Example Profile
-            </Button>
-            <Button variant="outline" className="border-slate-300 rounded-xl px-8 h-14 text-lg font-bold bg-white hover:bg-slate-50">
-              Start Sourcing
-            </Button>
+            <button className="btn btn-primary">
+              View an Example Passport
+            </button>
+            <button className="btn btn-ghost">
+              Start Vetting Now
+            </button>
           </div>
         </div>
       </div>
 
       {/* Feature Grid */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
-          <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)]">
-            <div className="w-12 h-12 bg-[#7140DB]/10 rounded-2xl flex items-center justify-center mb-6">
-              <GitCommit className="w-6 h-6 text-[#7140DB]" />
+          <div className="bezel-outer">
+            <div className="bezel-inner h-full">
+              <div className="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-xl flex items-center justify-center mb-6">
+                <GitCommit className="w-6 h-6 text-purple-400" />
+              </div>
+              <h3 className="text-xl font-bold text-fg-0 mb-3">Continuous AST Sync</h3>
+              <p className="text-fg-2 text-sm leading-relaxed">
+                Every code submission parses live. The platform evaluates codebase structures and updates the passport's structural difficulty score automatically.
+              </p>
             </div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-3">Real-Time Sync</h3>
-            <p className="text-slate-500 leading-relaxed">
-              Every time a candidate commits code, their Living Portfolio updates. You never look at stale data. You see exactly what they are building today.
-            </p>
           </div>
 
-          <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)]">
-            <div className="w-12 h-12 bg-[#7140DB]/10 rounded-2xl flex items-center justify-center mb-6">
-              <CheckCircle2 className="w-6 h-6 text-[#7140DB]" />
+          <div className="bezel-outer">
+            <div className="bezel-inner h-full">
+              <div className="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-xl flex items-center justify-center mb-6">
+                <CheckCircle2 className="w-6 h-6 text-purple-400" />
+              </div>
+              <h3 className="text-xl font-bold text-fg-0 mb-3">Proven Capabilities</h3>
+              <p className="text-fg-2 text-sm leading-relaxed">
+                Banish resume exaggerations. If an engineer claims competence in a language, our syntax analyzer maps actual commits to confirm language density.
+              </p>
             </div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-3">Verified Skills</h3>
-            <p className="text-slate-500 leading-relaxed">
-              No more keyword stuffing. If a candidate claims they know React, our engine verifies their actual React contributions across repositories.
-            </p>
           </div>
 
-          <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)]">
-            <div className="w-12 h-12 bg-[#7140DB]/10 rounded-2xl flex items-center justify-center mb-6">
-              <GitPullRequest className="w-6 h-6 text-[#7140DB]" />
+          <div className="bezel-outer">
+            <div className="bezel-inner h-full">
+              <div className="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-xl flex items-center justify-center mb-6">
+                <GitPullRequest className="w-6 h-6 text-purple-400" />
+              </div>
+              <h3 className="text-xl font-bold text-fg-0 mb-3">Trust Score Ledger</h3>
+              <p className="text-fg-2 text-sm leading-relaxed">
+                Integrates anti-plagiarism metrics, biometric validation signatures, and sandbox scores into a single verifiable trust rating.
+              </p>
             </div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-3">Code Quality Score</h3>
-            <p className="text-slate-500 leading-relaxed">
-              We analyze pull requests and code reviews to provide an automated signal on best practices, testing, and documentation habits.
-            </p>
           </div>
 
         </div>
