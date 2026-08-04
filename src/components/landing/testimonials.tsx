@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 
 const testimonials = [
   {
@@ -44,105 +43,102 @@ export function Testimonials() {
   const current = testimonials[currentIndex];
 
   return (
-    <section className="py-24 bg-white relative z-10">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+    <section className="py-24 bg-ink-0 border-t border-hair">
+      <div className="max-w-7xl mx-auto px-6">
         
-        <div className="rounded-2xl overflow-hidden shadow-2xl bg-[#111111] flex flex-col md:flex-row h-auto md:h-[500px]">
-          
-          {/* Left: Image (Half Width) */}
-          <div className="w-full md:w-1/2 h-[350px] md:h-full relative overflow-hidden bg-slate-200">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={current.id}
-                initial={{ opacity: 0, scale: 1.05 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.6 }}
-                className="absolute inset-0"
-              >
-                <img 
-                  src={current.image} 
-                  alt={current.name}
-                  className="w-full h-full object-cover object-[center_15%]"
-                />
-              </motion.div>
-            </AnimatePresence>
-          </div>
+        {/* Header */}
+        <div className="mb-12">
+          <span className="eyebrow">Trust</span>
+          <h2 className="mt-4 text-3xl sm:text-5xl font-bold tracking-tight text-fg-0">
+            Hiring managers <em>agree.</em>
+          </h2>
+        </div>
 
-          {/* Right: Content (Half Width) */}
-          <div className="w-full md:w-1/2 flex flex-col h-full">
+        {/* Double-Bezel Card Container */}
+        <div className="bezel-outer">
+          <div className="bezel-inner flex flex-col md:flex-row gap-8 items-center min-h-[360px]">
             
-            {/* Top: Quote Area */}
-            <div className="flex-1 p-8 md:p-12 lg:p-16 flex flex-col justify-center relative min-h-[250px]">
-              
-              {/* Pagination Dots */}
-              <div className="absolute top-6 left-8 md:top-10 md:left-12 flex gap-2 items-center">
-                {testimonials.map((_, idx) => (
-                  <button 
-                    key={idx}
-                    onClick={() => setCurrentIndex(idx)}
-                    className={`h-1 rounded-full transition-all duration-300 ${idx === currentIndex ? 'w-8 bg-white' : 'w-2 bg-white/30 hover:bg-white/50'}`}
-                    aria-label={`Go to slide ${idx + 1}`}
-                  />
-                ))}
-              </div>
-
+            {/* Left: Image with custom rounded bezel */}
+            <div className="w-full md:w-1/3 aspect-[4/3] md:aspect-square relative rounded-lg overflow-hidden border border-hair-2 bg-ink-2">
               <AnimatePresence mode="wait">
-                <motion.p
+                <motion.div
                   key={current.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.5 }}
-                  className="text-white text-lg md:text-xl lg:text-2xl font-medium leading-relaxed tracking-tight mt-6"
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="absolute inset-0"
                 >
-                  "{current.quote}"
-                </motion.p>
+                  <img 
+                    src={current.image} 
+                    alt={current.name}
+                    className="w-full h-full object-cover grayscale opacity-80"
+                  />
+                </motion.div>
               </AnimatePresence>
             </div>
 
-            {/* Bottom: Info Bar */}
-            <div className="flex flex-col sm:flex-row min-h-[100px] md:h-[120px]">
-              {/* Bottom Left: Name & Title (Dark) */}
-              <div className="flex-1 bg-[#1A1A1A] border-t border-white/10 p-6 md:p-8 flex flex-col justify-center min-w-[50%]">
+            {/* Right: Quote Content */}
+            <div className="w-full md:w-2/3 flex flex-col justify-between h-full py-4">
+              <div>
+                {/* Pagination Dots */}
+                <div className="flex gap-2 mb-6">
+                  {testimonials.map((_, idx) => (
+                    <button 
+                      key={idx}
+                      onClick={() => setCurrentIndex(idx)}
+                      className={`h-1 rounded-full transition-all duration-300 ${idx === currentIndex ? 'w-8 bg-purple-500' : 'w-2 bg-white/20 hover:bg-white/40'}`}
+                      aria-label={`Go to testimonial ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={current.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.4 }}
+                    className="text-lg md:text-xl font-medium text-fg-1 leading-relaxed italic"
+                  >
+                    "{current.quote}"
+                  </motion.p>
+                </AnimatePresence>
+              </div>
+
+              {/* Author Profile */}
+              <div className="mt-8 pt-6 border-t border-hair-2 flex justify-between items-end">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={current.id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5 }}
+                    className="flex flex-col"
                   >
-                    <h4 className="text-white font-bold text-sm tracking-wide line-clamp-1">{current.name}</h4>
-                    <p className="text-white/60 text-xs mt-1 line-clamp-1">{current.title}</p>
+                    <span className="font-bold text-fg-0 text-sm tracking-wide">{current.name}</span>
+                    <span className="text-xs text-fg-3 font-mono mt-1">{current.title}</span>
                   </motion.div>
                 </AnimatePresence>
-              </div>
 
-              {/* Bottom Right: Logo (White) */}
-              <div className="flex-1 sm:max-w-[220px] bg-white flex items-center justify-center p-6 border-t sm:border-l border-slate-100 min-h-[80px]">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={current.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.5 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-fg-3 font-mono text-sm tracking-widest font-semibold"
                   >
-                    <span className="text-xl md:text-2xl font-extrabold text-[#26C766] tracking-tighter flex items-center gap-2 whitespace-nowrap">
-                      <div className="w-5 h-6 rounded-full border-2 border-[#26C766] flex items-center justify-center relative flex-shrink-0">
-                        <div className="w-1.5 h-2.5 bg-[#26C766] rounded-sm absolute" />
-                      </div>
-                      <span className="truncate">{current.companyLogo}</span>
-                    </span>
+                    {current.companyLogo.toUpperCase()}
                   </motion.div>
                 </AnimatePresence>
               </div>
+
             </div>
 
           </div>
-
         </div>
+
       </div>
     </section>
   );

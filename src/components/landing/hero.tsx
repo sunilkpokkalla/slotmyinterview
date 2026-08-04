@@ -1,176 +1,155 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { ArrowRight, Terminal as TerminalIcon, ShieldAlert, CheckCircle, FileCode } from "lucide-react";
 
 export function Hero() {
-  const bands = [
-    { text: "Sync GitHub Work", bg: "#2B0A66", side: "left", startY: 60, endY: 420 },
-    { text: "Verify Capabilities", bg: "#4E2A9D", side: "right", startY: 150, endY: 330 },
-    { text: "Build Living Profile", bg: "#7140DB", side: "right", startY: 240, endY: 240 },
-    { text: "Fast-Track Interviews", bg: "#9674FF", side: "right", startY: 330, endY: 150 }
-  ];
-
-  const companies = [
-    "OpenAI", "Anthropic", "Scale AI", "Cohere", "Hugging Face", "Midjourney"
-  ];
-
   return (
-    <section className="relative w-full pt-32 lg:pt-40 bg-[#F8F9FC] overflow-hidden min-h-[800px] flex flex-col justify-end">
+    <section className="relative overflow-hidden bg-ink-0 pt-24 pb-20">
       
-      {/* Main Hero Headline & Graphic */}
-      <div className="max-w-7xl mx-auto px-6 mb-12 relative z-10 w-full flex flex-col md:flex-row items-center justify-between">
-        <div className="md:w-1/2">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-6xl md:text-7xl lg:text-8xl font-extrabold text-[#0F1115] tracking-tighter leading-[1.05] mb-6"
-          >
-            Hire Talent.<br />
-            Not Resumes.
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-xl text-slate-500 max-w-lg font-medium leading-relaxed"
-          >
-            The world's first capability-based hiring platform. Watch elite AI talent move seamlessly from verified GitHub profiles straight into your interview pipeline.
-          </motion.p>
-        </div>
+      {/* Background ambient mesh orbs */}
+      <div className="absolute top-[-20%] left-[30%] w-[600px] h-[600px] rounded-full bg-purple-500/5 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-emerald-500/5 blur-[120px] pointer-events-none" />
+
+      <div className="wrap relative z-10 flex flex-col items-center text-center">
         
-        {/* Floating CTA Card moved to the right column */}
-        <div className="w-full md:w-1/2 flex justify-start md:justify-end mt-12 md:mt-0 relative z-20">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="w-full max-w-[440px] bg-white rounded-[32px] p-8 md:p-10 shadow-[0_30px_100px_-15px_rgba(0,0,0,0.15)] border border-slate-100/50"
-          >
-            <h3 className="text-3xl font-extrabold text-[#0F1115] mb-3 tracking-tight leading-tight">
-              Start hiring verified talent
-            </h3>
-            <p className="text-slate-500 mb-8 font-medium text-sm">
-              Join the waitlist for early access to the platform.
-            </p>
-            
-            <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-              <div className="relative">
-                <Input 
-                  type="email" 
-                  placeholder="What's your work email?" 
-                  className="w-full h-14 px-5 rounded-2xl bg-[#F8F9FC] border-slate-200 text-base placeholder:text-slate-500 focus-visible:ring-[#7140DB] shadow-inner"
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full h-14 rounded-2xl bg-[#0A0C10] hover:bg-[#1a1f29] text-white font-bold text-lg transition-all shadow-md hover:shadow-xl active:scale-[0.98]">
-                Get early access
-              </Button>
-            </form>
-          </motion.div>
-        </div>
-      </div>
+        {/* Eyebrow */}
+        <span className="eyebrow">Capability-Based Hiring</span>
+        
+        {/* Headline */}
+        <h1 className="mt-6 text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight max-w-4xl leading-[1.1] text-fg-0">
+          Hire verified AI talent. <br />
+          <em>Skip the resume vetting.</em>
+        </h1>
+        
+        {/* Description */}
+        <p className="mt-6 text-lg sm:text-xl text-fg-2 max-w-2xl text-pretty leading-relaxed">
+          The first verified portfolio and interview marketplace. Watch elite AI engineers move seamlessly from verified GitHub histories straight into your interview calendar.
+        </p>
 
-      <div className="relative w-full h-[400px] mt-8">
-        {/* Intertwined Overlapping Paths Background */}
-        <div className="absolute inset-0 w-full h-full z-0">
-          <svg 
-            width="100%" 
-            height="100%" 
-            viewBox="0 0 3000 400" 
-            preserveAspectRatio="xMinYMid slice"
-            className="absolute inset-0"
-          >
-            {/* Band 1 (Darkest) - Back layer */}
-            <path id="path-0" d="M -100,60 L 350,60 L 710,420 L 3000,420" fill="none" stroke="#2B0A66" strokeWidth="56" strokeLinejoin="round" />
-            
-            {/* Band 2 (Dark) - Back layer */}
-            <path id="path-1" d="M -100,150 L 250,150 L 430,330 L 3000,330" fill="none" stroke="#4E2A9D" strokeWidth="56" strokeLinejoin="round" />
-            
-            {/* Band 3 (Medium) - Middle layer (straight) */}
-            <path id="path-2" d="M -100,240 L 3000,240" fill="none" stroke="#7140DB" strokeWidth="56" strokeLinejoin="round" />
-            
-            {/* Band 4 (Light) - Front layer (angles up) */}
-            <path id="path-3" d="M -100,330 L 150,330 L 330,150 L 3000,150" fill="none" stroke="#9674FF" strokeWidth="56" strokeLinejoin="round" />
-          </svg>
-
-          {/* Moving Dots */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 3000 400" preserveAspectRatio="xMinYMid slice">
-             <circle r="10" fill="white" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.2))">
-               <animateMotion dur="12s" repeatCount="indefinite" path="M -100,60 L 350,60 L 710,420 L 3000,420" />
-             </circle>
-             <circle r="10" fill="white" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.2))">
-               <animateMotion dur="13s" repeatCount="indefinite" begin="2s" path="M -100,150 L 250,150 L 430,330 L 3000,330" />
-             </circle>
-             <circle r="10" fill="white" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.2))">
-               <animateMotion dur="11s" repeatCount="indefinite" begin="1s" path="M -100,240 L 3000,240" />
-             </circle>
-             <circle r="10" fill="white" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.2))">
-               <animateMotion dur="12.5s" repeatCount="indefinite" begin="3s" path="M -100,330 L 150,330 L 330,150 L 3000,150" />
-             </circle>
-          </svg>
-        </div>
-
-        {/* Text Labels overlaid exactly on the paths */}
-        <div className="absolute inset-0 w-full h-full z-10 pointer-events-none overflow-hidden">
-          <div className="absolute inset-0 h-full w-full">
-              {bands.map((band, i) => {
-                const isLeft = band.side === "left";
-                const yPos = isLeft ? band.startY : band.endY;
-                
-                return (
-                  <motion.div 
-                    key={i} 
-                    initial={{ opacity: 0, x: isLeft ? -20 : 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 + (i * 0.1) }}
-                    className={`absolute flex items-center gap-4 h-[56px] pointer-events-auto ${isLeft ? 'left-6 md:left-24' : 'right-6 md:right-24 flex-row-reverse'}`}
-                    style={{ top: yPos - 28 }} // -28 to center the 56px high div on the path
-                  >
-                    <div className="relative flex items-center justify-center">
-                      <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm z-10">
-                        <div className="w-2 h-2 rounded-full bg-white shadow-sm" />
-                      </div>
-                    </div>
-                    <h3 className="text-lg md:text-xl font-bold text-white tracking-tight drop-shadow-md whitespace-nowrap">
-                      {band.text}
-                    </h3>
-                  </motion.div>
-                );
-              })}
-            </div>
-        </div>
-      </div>
-
-      <div className="mt-20 md:mt-32 w-full relative z-10 pb-20 overflow-hidden">
-          <p className="text-sm font-semibold text-slate-400 mb-10 tracking-widest text-center uppercase">
-            Trusted by <strong className="text-slate-700">10,000+</strong> AI engineering teams
+        {/* Input form */}
+        <div className="mt-10 w-full max-w-xl">
+          <form className="flex flex-col sm:flex-row items-stretch gap-2 rounded-xl p-1.5 bg-ink-2/80 border border-hair shadow-xl" onSubmit={(e) => e.preventDefault()}>
+            <input 
+              type="email" 
+              required 
+              placeholder="What's your work email?" 
+              className="flex-1 px-4 py-3 rounded-lg text-sm bg-transparent outline-none border-0 text-fg-0 font-mono placeholder:text-fg-3"
+            />
+            <button type="submit" className="btn btn-accent whitespace-nowrap text-sm px-6 py-3">
+              Get early access
+            </button>
+          </form>
+          <p className="mt-3 text-xs text-fg-3 font-mono">
+            Join 12,000+ engineers and hiring managers already using SlotMyInterview.
           </p>
-          
-          <div className="relative flex overflow-hidden w-full max-w-[100vw]">
-            {/* Edge Fade Masks */}
-            <div className="absolute left-0 top-0 bottom-0 w-32 md:w-64 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-32 md:w-64 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
-            
-            {/* Infinite Marquee Track */}
-            <motion.div
-              className="flex items-center w-max"
-              animate={{ x: ["0%", "-50%"] }}
-              transition={{ repeat: Infinity, ease: "linear", duration: 40 }}
-            >
-              {/* Duplicate array multiple times to ensure seamless infinite looping */}
-              {[...companies, ...companies, ...companies, ...companies].map((company, idx) => (
-                <div key={idx} className="flex-none px-12 md:px-24">
-                  <span className="text-xl md:text-2xl font-extrabold text-slate-300 uppercase tracking-[0.2em] hover:text-slate-500 transition-colors duration-300">
-                    {company}
-                  </span>
-                </div>
-              ))}
-            </motion.div>
-          </div>
         </div>
-      
+
+        {/* Interactive Dashboard / Console Double-Bezel Mockup */}
+        <div className="mt-16 w-full max-w-[1100px] grid md:grid-cols-12 gap-6 text-left">
+          
+          {/* Left: Terminal Vetting Console (7 cols) */}
+          <div className="md:col-span-7 bezel-outer">
+            <div className="bezel-inner h-full flex flex-col font-mono text-xs text-fg-2 min-h-[300px]">
+              
+              {/* Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-hair-2 mb-4">
+                <div className="flex items-center gap-2">
+                  <TerminalIcon className="w-4 h-4 text-purple-400" />
+                  <span className="font-semibold text-fg-0">vetting-agent-daemon</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+                </div>
+              </div>
+
+              {/* Console logs */}
+              <div className="flex-1 flex flex-col gap-2">
+                <div className="flex gap-2">
+                  <span className="text-purple-400">$</span>
+                  <span className="text-fg-0">slotmyinterview verify-identity --user @kyle-ml-dev</span>
+                </div>
+                <div className="text-fg-3">✓ Checked OAuth identity against active GPG commit signing keys</div>
+                <div className="flex gap-2 mt-1">
+                  <span className="text-purple-400">$</span>
+                  <span className="text-fg-0">slotmyinterview analyze-repos --min-stars 50</span>
+                </div>
+                <div className="text-fg-3">↳ Found 3 candidate repositories (Python, Rust, TypeScript)</div>
+                <div className="text-fg-3">↳ Repository `llm-agent-router` shows high algorithmic depth</div>
+                <div className="text-emerald-400 font-semibold flex items-center gap-1.5 mt-1">
+                  <CheckCircle className="w-3.5 h-3.5" />
+                  <span>VETTING PASSED: Verified code profile ready at slotmyinterview.com/u/kyle</span>
+                </div>
+                
+                <div className="mt-4 pt-4 border-t border-hair-2 flex items-center justify-between">
+                  <span className="text-fg-3">Automatic booking ready</span>
+                  <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px]">Active Integration</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Right: Candidate Profile (5 cols) */}
+          <div className="md:col-span-5 bezel-outer">
+            <div className="bezel-inner h-full flex flex-col justify-between">
+              
+              <div>
+                {/* Header Profile */}
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg">
+                    K
+                  </div>
+                  <div>
+                    <h4 className="text-base font-semibold text-fg-0">Kyle M.</h4>
+                    <p className="text-xs text-fg-3 font-mono">Senior AI & Infrastructure Engineer</p>
+                  </div>
+                </div>
+
+                {/* Score list */}
+                <div className="flex flex-col gap-3">
+                  <div className="p-3 rounded-lg bg-white/[0.02] border border-hair flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-fg-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg>
+                      <span className="text-sm font-medium text-fg-1">GitHub Score</span>
+                    </div>
+                    <span className="font-mono text-emerald-400 font-bold">98 / 100</span>
+                  </div>
+
+                  <div className="p-3 rounded-lg bg-white/[0.02] border border-hair flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileCode className="w-4 h-4 text-fg-2" />
+                      <span className="text-sm font-medium text-fg-1">Verified PRs</span>
+                    </div>
+                    <span className="font-mono text-fg-0">12 Merged</span>
+                  </div>
+
+                  <div className="p-3 rounded-lg bg-white/[0.02] border border-hair flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <ShieldAlert className="w-4 h-4 text-fg-2" />
+                      <span className="text-sm font-medium text-fg-1">Identity Check</span>
+                    </div>
+                    <span className="font-mono text-emerald-400 font-semibold">100% Passed</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Booking CTA button */}
+              <div className="mt-6">
+                <button className="w-full btn btn-primary flex items-center justify-center gap-2">
+                  <span>Slot an Interview</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
     </section>
   );
 }

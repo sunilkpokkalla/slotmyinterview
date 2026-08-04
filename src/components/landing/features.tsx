@@ -1,132 +1,143 @@
 "use client";
 
-import { Shield, Lock, Fingerprint } from "lucide-react";
+import { Shield, Fingerprint, Lock, CheckCircle, Database, GitMerge, Users, Calendar } from "lucide-react";
 
 export function Features() {
+  const steps = [
+    {
+      num: "01 · SYNC",
+      title: "Index candidate code histories.",
+      desc: "Connect candidate GitHub profiles with one click. Our parser catalogs language depth, framework experience, and commit patterns automatically."
+    },
+    {
+      num: "02 · VET",
+      title: "Confirm architectural capabilities.",
+      desc: "Assign sandbox PR reviews and code challenges. Move past simple multiple choice questions to see how they write and structure real production modules."
+    },
+    {
+      num: "03 · BOOK",
+      title: "Fast-track directly to your loop.",
+      desc: "Candidates publish calendar availability instantly. Skip the back-and-forth email coordinate loops and land top talent on your calendar."
+    }
+  ];
+
   return (
-    <section className="py-24 bg-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+    <section className="py-24 bg-ink-0 border-t border-hair">
+      <div className="max-w-7xl mx-auto px-6">
         
         {/* Header */}
-        <div className="mb-12">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
-            The anti-noise hiring platform
+        <div className="mb-16">
+          <span className="eyebrow">Platform Capabilities</span>
+          <h2 className="mt-4 text-3xl sm:text-5xl font-bold tracking-tight text-fg-0">
+            The anti-noise <em>hiring pipeline.</em>
           </h2>
-          <p className="text-xl text-slate-500 max-w-2xl">
-            Don't end up with a bloated pipeline of unqualified candidates.<br />
-            Our platform architecture helps you hire the top 1% of AI talent.
+          <p className="mt-4 text-base sm:text-lg text-fg-2 max-w-xl">
+            Tired of resume fluff? We replace static bullet points with raw, verified technical capability scores.
           </p>
         </div>
 
-        {/* Massive Card */}
-        <div className="w-full rounded-[2rem] overflow-hidden flex flex-col lg:flex-row shadow-2xl">
+        {/* Bento Grid */}
+        <div className="grid md:grid-cols-12 gap-6 mb-16">
           
-          {/* Left Side - Light Purple */}
-          <div className="bg-[#6B47ED] w-full lg:w-[40%] p-10 md:p-14 flex flex-col justify-between text-white">
-            
-            <div>
-              <h3 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">Verified AI Network</h3>
-              <p className="text-white/80 text-lg leading-relaxed mb-12">
-                Secure, vetting-native platform for business-critical engineering hiring
-              </p>
+          {/* Left Block - Vetting Network */}
+          <div className="md:col-span-5 bezel-outer">
+            <div className="bezel-inner h-full flex flex-col justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-fg-0 mb-3">Verified Talent Network</h3>
+                <p className="text-sm text-fg-2 leading-relaxed mb-8">
+                  Security-first vetting architecture designed for high-conviction engineering organizations.
+                </p>
 
-              {/* Badges */}
-              <div className="flex gap-6 mb-16">
-                <div className="flex flex-col items-center gap-3">
-                  <div className="w-[72px] h-[72px] rounded-full border border-white/30 flex items-center justify-center">
-                    <Shield className="w-8 h-8" />
+                {/* Vetting badges */}
+                <div className="grid grid-cols-3 gap-4 mb-8">
+                  <div className="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/[0.02] border border-hair text-center">
+                    <Shield className="w-5 h-5 text-purple-400" />
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-fg-2">Manual Audit</span>
                   </div>
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-white/90">Manual Vetting</span>
+                  <div className="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/[0.02] border border-hair text-center">
+                    <Fingerprint className="w-5 h-5 text-purple-400" />
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-fg-2">Identity Sync</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/[0.02] border border-hair text-center">
+                    <Lock className="w-5 h-5 text-purple-400" />
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-fg-2">SSO Enabled</span>
+                  </div>
                 </div>
-                <div className="flex flex-col items-center gap-3">
-                  <div className="w-[72px] h-[72px] rounded-full border border-white/30 flex items-center justify-center">
-                    <Fingerprint className="w-8 h-8" />
-                  </div>
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-white/90">Identity Sync</span>
-                </div>
-                <div className="flex flex-col items-center gap-3">
-                  <div className="w-[72px] h-[72px] rounded-full border border-white/30 flex items-center justify-center">
-                    <Lock className="w-8 h-8" />
-                  </div>
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-white/90">SSO Ready</span>
+              </div>
+
+              {/* Integrations */}
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-fg-3 block mb-3">ATS CONNECTORS</span>
+                <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-fg-2">
+                  <span>Greenhouse</span>
+                  <span>Lever</span>
+                  <span>Ashby</span>
+                  <span>Workday</span>
                 </div>
               </div>
             </div>
-
-            {/* Integrations */}
-            <div>
-              <h4 className="text-xl font-semibold mb-6">Seamless Integrations</h4>
-              <div className="flex flex-wrap gap-x-8 gap-y-6 opacity-90">
-                <span className="text-2xl font-black tracking-tighter">Greenhouse</span>
-                <span className="text-2xl font-black tracking-tighter">Lever</span>
-                <span className="text-2xl font-black tracking-tighter">Ashby</span>
-                <span className="text-2xl font-bold tracking-tighter">Workday</span>
-              </div>
-            </div>
-
           </div>
 
-          {/* Right Side - Dark Purple */}
-          <div className="bg-[#1C054E] w-full lg:w-[60%] flex flex-col border-l border-white/10">
-            
-            {/* Top Block */}
-            <div className="p-10 md:p-14 border-b border-white/10">
-              <h3 className="text-3xl font-bold text-white mb-3">Living Portfolios</h3>
-              <p className="text-[#A78BFA] text-base leading-relaxed">
-                AI-powered codifications of a candidate's GitHub, side projects, and open-source contributions. Unifying technical screening by showing you their actual capabilities instead of bullet points.
-              </p>
-            </div>
-
-            {/* Grid Block */}
-            <div className="grid grid-cols-1 md:grid-cols-2 flex-1">
+          {/* Right Block - Features list */}
+          <div className="md:col-span-7 bezel-outer">
+            <div className="bezel-inner h-full grid sm:grid-cols-2 gap-6">
               
-              <div className="p-10 border-b md:border-r border-white/10">
-                <h4 className="text-xl font-bold text-white mb-2">Challenges</h4>
-                <p className="text-[#8973B9] text-sm leading-relaxed font-medium">
-                  Building blocks that allow hiring managers to assign real-world AI PRs and code reviews instead of leetcode puzzles.
+              <div className="p-4 border border-hair rounded-lg bg-white/[0.01]">
+                <div className="flex items-center gap-2 mb-2">
+                  <Database className="w-4 h-4 text-purple-400" />
+                  <h4 className="text-sm font-bold text-fg-0">Living Portfolios</h4>
+                </div>
+                <p className="text-xs text-fg-2 leading-relaxed">
+                  Real-time parsed snapshots of a developer's real repositories, commits, and package releases.
                 </p>
               </div>
 
-              <div className="p-10 border-b border-white/10">
-                <h4 className="text-xl font-bold text-white mb-2">Agents</h4>
-                <p className="text-[#8973B9] text-sm leading-relaxed font-medium">
-                  Automate targeted initial screening by combining our AI decision-making with proper hiring guardrails.
+              <div className="p-4 border border-hair rounded-lg bg-white/[0.01]">
+                <div className="flex items-center gap-2 mb-2">
+                  <GitMerge className="w-4 h-4 text-purple-400" />
+                  <h4 className="text-sm font-bold text-fg-0">Code Challenges</h4>
+                </div>
+                <p className="text-xs text-fg-2 leading-relaxed">
+                  Assign sandbox git branches and PR reviews. Evaluate exact spatial code depth rather than quiz answers.
                 </p>
               </div>
 
-              <div className="p-10 border-b md:border-r border-white/10">
-                <h4 className="text-xl font-bold text-white mb-2">Talent Pools</h4>
-                <p className="text-[#8973B9] text-sm leading-relaxed font-medium">
-                  A queryable data foundation that consolidates verified AI engineers, allowing you to instantly source frameworks.
+              <div className="p-4 border border-hair rounded-lg bg-white/[0.01]">
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="w-4 h-4 text-purple-400" />
+                  <h4 className="text-sm font-bold text-fg-0">Talent Pools</h4>
+                </div>
+                <p className="text-xs text-fg-2 leading-relaxed">
+                  Query profiles by code-verified framework expertise, algorithmic scores, and experience tiers.
                 </p>
               </div>
 
-              <div className="p-10 border-b border-white/10">
-                <h4 className="text-xl font-bold text-white mb-2">Live Coding</h4>
-                <p className="text-[#8973B9] text-sm leading-relaxed font-medium">
-                  An interactive interface that allows interviewers to rapidly pair program and complete technical deep-dives.
-                </p>
-              </div>
-
-              <div className="p-10 border-b md:border-b-0 md:border-r border-white/10">
-                <h4 className="text-xl font-bold text-white mb-2">Skill Graph</h4>
-                <p className="text-[#8973B9] text-sm leading-relaxed font-medium">
-                  A centralized repository of a candidate's essential technical stack to inform faster hiring decisions.
-                </p>
-              </div>
-
-              <div className="p-10 border-white/10">
-                <h4 className="text-xl font-bold text-white mb-2">ATS Sync</h4>
-                <p className="text-[#8973B9] text-sm leading-relaxed font-medium">
-                  The definition of your hiring workflow mapped instantly to your existing applicant tracking system.
+              <div className="p-4 border border-hair rounded-lg bg-white/[0.01]">
+                <div className="flex items-center gap-2 mb-2">
+                  <Calendar className="w-4 h-4 text-purple-400" />
+                  <h4 className="text-sm font-bold text-fg-0">Direct Booking</h4>
+                </div>
+                <p className="text-xs text-fg-2 leading-relaxed">
+                  Connect direct hiring manager calendars. Candidates slot calls straight into your loop.
                 </p>
               </div>
 
             </div>
-
           </div>
 
         </div>
+
+        {/* Step Walkthrough */}
+        <div className="grid md:grid-cols-3 gap-8 pt-12 border-t border-hair">
+          {steps.map((step, idx) => (
+            <div key={idx} className="flex flex-col gap-3">
+              <span className="font-mono text-xs text-purple-400 font-semibold">{step.num}</span>
+              <h3 className="text-lg font-bold text-fg-0">{step.title}</h3>
+              <p className="text-sm text-fg-2 leading-relaxed">{step.desc}</p>
+            </div>
+          ))}
+        </div>
+
       </div>
     </section>
   );
