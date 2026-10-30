@@ -1,0 +1,46 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="128" fill="#000000"/>
+
+  <g transform="translate(64, 64) scale(12)">
+    <!-- Top Facet (Pure White) -->
+    <path 
+      d="M16 2.5L28 9L16 15.5L4 9L16 2.5Z" 
+      fill="#FFFFFF" 
+    />
+    
+    <!-- Left Facet (Light Silver Shading) -->
+    <path 
+      d="M4 9L16 15.5V29.5L4 23V9Z" 
+      fill="#D1D5DB" 
+    />
+    
+    <!-- Right Facet (Dark Metallic Shading) -->
+    <path 
+      d="M28 9L16 15.5V29.5L28 23V9Z" 
+      fill="#6B7280" 
+    />
+
+    <!-- Inner Facet Cutout forming the 'S' Slot (Dark Inset Facet) -->
+    <path 
+      d="M16 15.5L22 12L16 8.5L10 12L16 15.5Z" 
+      fill="#111827" 
+    />
+    <path 
+      d="M16 15.5V22.5L10 19V12L16 15.5Z" 
+      fill="#1F2937" 
+    />
+    <path 
+      d="M16 15.5V22.5L22 19V12L16 15.5Z" 
+      fill="#374151" 
+    />
+
+    <!-- Accent Core Slot Line -->
+    <path 
+      d="M16 8.5L22 12L16 15.5L10 19L16 22.5" 
+      stroke="#A855F7" 
+      stroke-width="1.5" 
+      stroke-linecap="round" 
+      stroke-linejoin="round" 
+    />
+  </g>
+</svg>

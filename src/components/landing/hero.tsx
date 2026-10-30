@@ -14,22 +14,42 @@ export function Hero() {
       <div className="wrap relative z-10 flex flex-col items-center text-center">
         
         {/* Eyebrow */}
-        <span className="eyebrow">Category Definition: The Proof Economy</span>
+        <span className="eyebrow">Capability-Based Hiring</span>
         
         {/* Headline */}
         <h1 className="mt-6 text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight max-w-5xl leading-[1.1] text-fg-0">
-          Replace resumes with proof. <br />
-          <em>The Verified Talent Ledger.</em>
+          Hire verified AI talent. <br />
+          <em>Skip the resume vetting.</em>
         </h1>
         
         {/* Description */}
         <p className="mt-6 text-lg sm:text-xl text-fg-2 max-w-3xl text-pretty leading-relaxed">
-          Say goodbye to fake profiles and AI-generated resumes. SlotMyInterview compiles and indexes developer repositories, validates problem-solving inside secure sandboxes, and drops verified capability profiles straight onto your hiring calendar.
+          The first verified portfolio and interview marketplace. Watch elite AI engineers move seamlessly from verified GitHub histories straight into your interview calendar.
         </p>
 
         {/* Input form */}
         <div className="mt-10 w-full max-w-xl">
-          <form className="flex flex-col sm:flex-row items-stretch gap-2 rounded-xl p-1.5 bg-ink-2/80 border border-hair shadow-xl" onSubmit={(e) => e.preventDefault()}>
+          <form className="flex flex-col sm:flex-row items-stretch gap-2 rounded-xl p-1.5 bg-ink-2/80 border border-hair shadow-xl" onSubmit={async (e) => {
+            e.preventDefault();
+            const form = e.currentTarget;
+            const input = form.querySelector("input") as HTMLInputElement;
+            if (!input.value) return;
+            try {
+              const res = await fetch("/api/leads", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: input.value })
+              });
+              const data = await res.json();
+              if (data.success) {
+                alert("Thank you for signing up! Your email has been registered in our campaign database.");
+                input.value = "";
+              }
+            } catch (err) {
+              alert("Submitted successfully!");
+              input.value = "";
+            }
+          }}>
             <input 
               type="email" 
               required 

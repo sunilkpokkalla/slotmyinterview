@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/ui/logo";
 
 export function Footer() {
   return (
@@ -8,15 +9,8 @@ export function Footer() {
           
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#7140DB] to-[#4E2A9D] flex items-center justify-center">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
-                  <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" fillOpacity="0.4" />
-                  <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-              <span className="font-bold text-fg-0">SlotMyInterview</span>
+            <Link href="/" className="inline-block">
+              <Logo size="md" showTagline={true} />
             </Link>
             <p className="mt-4 text-[13px] leading-relaxed text-fg-3 font-mono max-w-[240px]">
               Capability-based hiring marketplace for AI professionals. Verify code, skip resumes.
