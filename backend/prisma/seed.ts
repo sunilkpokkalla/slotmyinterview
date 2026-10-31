@@ -1,5 +1,4 @@
 import { PrismaClient, Role, AuthProvider, AvailabilityStatus, WorkLocation, WorkType, PipelineStage, TaskType, TaskStatus, InterviewFormat, InterviewStatus } from "@prisma/client";
-import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -20,7 +19,6 @@ async function main() {
   await prisma.seekerSkill.deleteMany();
   await prisma.seekerProfile.deleteMany();
   await prisma.providerProfile.deleteMany();
-  await prisma.refreshToken.deleteMany();
   await prisma.skill.deleteMany();
   await prisma.skillCategory.deleteMany();
   await prisma.user.deleteMany();
@@ -103,15 +101,13 @@ async function main() {
 
   console.log(`✅ Seeded ${categoriesData.length} skill categories and ${Object.keys(skillMap).length} technical skills.`);
 
-  const passwordHash = await bcrypt.hash("Password123!", 10);
-
   // ==============================================================
   // 2. Job Providers (Companies)
   // ==============================================================
   const provider1User = await prisma.user.create({
     data: {
       email: "recruiting@scale.ai",
-      passwordHash,
+      authUserId: "seed-scale-provider",
       role: Role.JOB_PROVIDER,
       authProvider: AuthProvider.LOCAL,
       isEmailVerified: true,
@@ -131,7 +127,7 @@ async function main() {
   const provider2User = await prisma.user.create({
     data: {
       email: "careers@stripe.com",
-      passwordHash,
+      authUserId: "seed-stripe-provider",
       role: Role.JOB_PROVIDER,
       authProvider: AuthProvider.LOCAL,
       isEmailVerified: true,
@@ -151,7 +147,7 @@ async function main() {
   const provider3User = await prisma.user.create({
     data: {
       email: "talent@vercel.com",
-      passwordHash,
+      authUserId: "seed-vercel-provider",
       role: Role.JOB_PROVIDER,
       authProvider: AuthProvider.LOCAL,
       isEmailVerified: true,
@@ -274,7 +270,7 @@ async function main() {
   const seeker1User = await prisma.user.create({
     data: {
       email: "sunil@slotmyinterview.com",
-      passwordHash,
+      authUserId: "seed-sunil-seeker",
       role: Role.JOB_SEEKER,
       authProvider: AuthProvider.LOCAL,
       isEmailVerified: true,
@@ -381,10 +377,9 @@ async function main() {
   const seeker2User = await prisma.user.create({
     data: {
       email: "alex@arivera.ai",
-      passwordHash,
+      authUserId: "seed-gh_alex_rivera",
       role: Role.JOB_SEEKER,
       authProvider: AuthProvider.GITHUB,
-      providerId: "gh_alex_rivera",
       isEmailVerified: true,
       seekerProfile: {
         create: {
@@ -436,10 +431,9 @@ async function main() {
   const seeker3User = await prisma.user.create({
     data: {
       email: "sarah@chen.systems",
-      passwordHash,
+      authUserId: "seed-g_sarah_chen",
       role: Role.JOB_SEEKER,
       authProvider: AuthProvider.GOOGLE,
-      providerId: "g_sarah_chen",
       isEmailVerified: true,
       seekerProfile: {
         create: {
@@ -481,7 +475,7 @@ async function main() {
   const seeker4User = await prisma.user.create({
     data: {
       email: "elena@rostova.tech",
-      passwordHash,
+      authUserId: "seed-elena-seeker",
       role: Role.JOB_SEEKER,
       authProvider: AuthProvider.LOCAL,
       isEmailVerified: true,

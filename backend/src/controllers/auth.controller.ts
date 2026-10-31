@@ -117,11 +117,9 @@ export const authController = {
         throw new AppError("User not found", 404);
       }
 
-      const { passwordHash, ...safeUser } = user;
-
       res.status(200).json({
         success: true,
-        data: safeUser,
+        data: user,
       } as ApiResponse);
     } catch (error) {
       next(error);

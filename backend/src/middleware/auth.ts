@@ -1,15 +1,10 @@
 import { Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import * as jose from "jose";
 import { config } from "../config/env.js";
 import { prisma } from "../config/prisma.js";
-import { AuthenticatedRequest, AuthenticatedUser, Role } from "../types/index.js";
+import { verifyToken } from "../config/supabase.js";
+import { AuthenticatedRequest, Role } from "../types/index.js";
 import { AppError } from "./errorHandler.js";
-
-interface JwtPayload {
-  userId: string;
-  email: string;
-  role: Role;
-}
 
 export const authenticateJWT = async (
   req: AuthenticatedRequest,
@@ -23,40 +18,104 @@ export const authenticateJWT = async (
     }
 
     const token = authHeader.split(" ")[1];
-    let decoded: JwtPayload;
 
-    try {
-      decoded = jwt.verify(token, config.jwt.accessSecret) as JwtPayload;
-    } catch (err: any) {
-      if (err.name === "TokenExpiredError") {
-        throw new AppError("Access token expired", 401);
+    // 1. Try Supabase Auth verification
+    const supabaseUser = await verifyToken(token);
+    if (supabaseUser) {
+      // Find or provision user in Prisma
+      let user = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { authUserId: supabaseUser.authUserId },
+            { email: supabaseUser.email.toLowerCase() },
+          ],
+        },
+        include: {
+          seekerProfile: { select: { id: true, username: true } },
+          providerProfile: { select: { id: true } },
+        },
+      });
+
+      if (!user) {
+        // Auto-provision new Supabase OAuth / email user in local database
+        const baseUsername = (supabaseUser.fullName || supabaseUser.email.split("@")[0])
+          .toLowerCase()
+          .replace(/[^a-z0-9_-]/g, "");
+        const username = `${baseUsername}_${Math.floor(1000 + Math.random() * 9000)}`;
+
+        user = await prisma.user.create({
+          data: {
+            authUserId: supabaseUser.authUserId,
+            email: supabaseUser.email.toLowerCase(),
+            role: Role.JOB_SEEKER,
+            isEmailVerified: true,
+            avatarUrl: supabaseUser.avatarUrl,
+            seekerProfile: {
+              create: {
+                username,
+                fullName: supabaseUser.fullName || baseUsername,
+                photoUrl: supabaseUser.avatarUrl,
+                headline: "Software Engineer",
+              },
+            },
+          },
+          include: {
+            seekerProfile: { select: { id: true, username: true } },
+            providerProfile: { select: { id: true } },
+          },
+        });
+      } else if (!user.authUserId) {
+        // Link Supabase authUserId
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { authUserId: supabaseUser.authUserId },
+        });
       }
-      throw new AppError("Invalid or malformed access token", 401);
+
+      req.user = {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        seekerProfileId: user.seekerProfile?.id,
+        providerProfileId: user.providerProfile?.id,
+        username: user.seekerProfile?.username,
+      };
+
+      return next();
     }
 
-    // Verify user still exists in DB
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-      include: {
-        seekerProfile: { select: { id: true, username: true } },
-        providerProfile: { select: { id: true } },
-      },
-    });
+    // 2. Fallback to local / demo token verification via jose
+    try {
+      const secret = new TextEncoder().encode(config.jwt.accessSecret);
+      const { payload } = await jose.jwtVerify(token, secret);
+      const userId = (payload.userId || payload.sub) as string;
 
-    if (!user) {
-      throw new AppError("User account no longer exists", 401);
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          seekerProfile: { select: { id: true, username: true } },
+          providerProfile: { select: { id: true } },
+        },
+      });
+
+      if (!user) {
+        throw new AppError("User account no longer exists", 401);
+      }
+
+      req.user = {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        seekerProfileId: user.seekerProfile?.id,
+        providerProfileId: user.providerProfile?.id,
+        username: user.seekerProfile?.username,
+      };
+
+      return next();
+    } catch (err: any) {
+      if (err instanceof AppError) throw err;
+      throw new AppError("Invalid or expired access token", 401);
     }
-
-    req.user = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      seekerProfileId: user.seekerProfile?.id,
-      providerProfileId: user.providerProfile?.id,
-      username: user.seekerProfile?.username,
-    };
-
-    next();
   } catch (error) {
     next(error);
   }
@@ -90,9 +149,43 @@ export const optionalAuth = async (
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const token = authHeader.split(" ")[1];
-      const decoded = jwt.verify(token, config.jwt.accessSecret) as JwtPayload;
+      
+      // Try Supabase verification
+      const supabaseUser = await verifyToken(token);
+      if (supabaseUser) {
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { authUserId: supabaseUser.authUserId },
+              { email: supabaseUser.email.toLowerCase() },
+            ],
+          },
+          include: {
+            seekerProfile: { select: { id: true, username: true } },
+            providerProfile: { select: { id: true } },
+          },
+        });
+
+        if (user) {
+          req.user = {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            seekerProfileId: user.seekerProfile?.id,
+            providerProfileId: user.providerProfile?.id,
+            username: user.seekerProfile?.username,
+          };
+          return next();
+        }
+      }
+
+      // Try local token
+      const secret = new TextEncoder().encode(config.jwt.accessSecret);
+      const { payload } = await jose.jwtVerify(token, secret);
+      const userId = (payload.userId || payload.sub) as string;
+
       const user = await prisma.user.findUnique({
-        where: { id: decoded.userId },
+        where: { id: userId },
         include: {
           seekerProfile: { select: { id: true, username: true } },
           providerProfile: { select: { id: true } },
@@ -115,4 +208,3 @@ export const optionalAuth = async (
   }
   next();
 };
-

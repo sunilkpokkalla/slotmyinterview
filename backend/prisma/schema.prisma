@@ -1,6 +1,10 @@
+// Supabase Postgres:
+//   DATABASE_URL -> transaction pooler (port 6543, ?pgbouncer=true) used at runtime
+//   DIRECT_URL   -> direct/session connection (port 5432) used by `prisma db push` / migrations
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -75,13 +79,14 @@ enum InterviewStatus {
   RESCHEDULED
 }
 
+// Credentials, sessions and OAuth live in Supabase Auth (auth.users).
+// This table holds the app-level account (role + profile) linked by authUserId.
 model User {
   id               String       @id @default(uuid())
+  authUserId       String?      @unique // Supabase auth.users.id (JWT `sub`)
   email            String       @unique
-  passwordHash     String?
   role             Role         @default(JOB_SEEKER)
   authProvider     AuthProvider @default(LOCAL)
-  providerId       String?
   isEmailVerified  Boolean      @default(false)
   avatarUrl        String?
   createdAt        DateTime     @default(now())
@@ -90,21 +95,11 @@ model User {
   // Relationships
   seekerProfile   SeekerProfile?
   providerProfile ProviderProfile?
-  refreshTokens   RefreshToken[]
 
   @@index([email])
 }
 
-model RefreshToken {
-  id        String   @id @default(uuid())
-  token     String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
 
-  @@index([userId])
-}
 
 model SkillCategory {
   id          String   @id @default(uuid())

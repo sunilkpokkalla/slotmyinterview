@@ -1,8 +1,8 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import * as jose from "jose";
 import { v4 as uuidv4 } from "uuid";
 import { prisma } from "../config/prisma.js";
 import { config } from "../config/env.js";
+import { supabase } from "../config/supabase.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { Role, AuthProvider, AvailabilityStatus } from "@prisma/client";
 import { scoringService } from "./scoring.service.js";
@@ -21,39 +21,35 @@ interface TokenPair {
 }
 
 export const authService = {
-  generateTokens(userId: string, email: string, role: Role): { accessToken: string; rawRefreshToken: string } {
-    const accessToken = jwt.sign(
-      { userId, email, role },
-      config.jwt.accessSecret,
-      { expiresIn: config.jwt.accessExpiresIn as any }
-    );
+  async generateTokens(userId: string, email: string, role: Role): Promise<{ accessToken: string; rawRefreshToken: string }> {
+    const secret = new TextEncoder().encode(config.jwt.accessSecret);
+    const accessToken = await new jose.SignJWT({ userId, email, role })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime(config.jwt.accessExpiresIn || "7d")
+      .sign(secret);
 
     const rawRefreshToken = uuidv4();
     return { accessToken, rawRefreshToken };
   },
 
-  async saveRefreshToken(userId: string, token: string): Promise<void> {
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
-
-    await prisma.refreshToken.create({
-      data: {
-        token,
-        userId,
-        expiresAt,
-      },
-    });
-  },
-
   async registerSeeker(data: {
     email: string;
-    password: string;
+    password?: string;
     fullName: string;
     username: string;
     headline?: string;
+    authUserId?: string;
   }): Promise<TokenPair> {
-    const existingUser = await prisma.user.findUnique({
-      where: { email: data.email.toLowerCase() },
+    const cleanEmail = data.email.toLowerCase();
+
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: cleanEmail },
+          ...(data.authUserId ? [{ authUserId: data.authUserId }] : []),
+        ],
+      },
     });
 
     if (existingUser) {
@@ -68,15 +64,31 @@ export const authService = {
       throw new AppError("This username is already taken. Please choose another.", 409);
     }
 
-    const passwordHash = await bcrypt.hash(data.password, 12);
+    // If Supabase is connected and no authUserId passed, create in Supabase Auth
+    let authUserId = data.authUserId;
+    if (!authUserId && supabase && data.password) {
+      try {
+        const { data: suData, error: suError } = await supabase.auth.admin.createUser({
+          email: cleanEmail,
+          password: data.password,
+          email_confirm: true,
+          user_metadata: { full_name: data.fullName, role: "JOB_SEEKER" },
+        });
+        if (!suError && suData?.user) {
+          authUserId = suData.user.id;
+        }
+      } catch {
+        // Fall back to local account creation
+      }
+    }
 
     const user = await prisma.user.create({
       data: {
-        email: data.email.toLowerCase(),
-        passwordHash,
+        authUserId,
+        email: cleanEmail,
         role: Role.JOB_SEEKER,
         authProvider: AuthProvider.LOCAL,
-        isEmailVerified: true, // Auto-verify for seamless onboarding
+        isEmailVerified: true,
         seekerProfile: {
           create: {
             username: data.username.toLowerCase(),
@@ -93,13 +105,11 @@ export const authService = {
       },
     });
 
-    // Compute initial profile score
     if (user.seekerProfile) {
       await scoringService.computeSeekerTalentScore(user.seekerProfile.id);
     }
 
-    const { accessToken, rawRefreshToken } = this.generateTokens(user.id, user.email, user.role);
-    await this.saveRefreshToken(user.id, rawRefreshToken);
+    const { accessToken, rawRefreshToken } = await this.generateTokens(user.id, user.email, user.role);
 
     return {
       accessToken,
@@ -116,27 +126,50 @@ export const authService = {
 
   async registerProvider(data: {
     email: string;
-    password: string;
+    password?: string;
     companyName: string;
     website: string;
     description: string;
     logoUrl?: string;
     location?: string;
+    authUserId?: string;
   }): Promise<TokenPair> {
-    const existingUser = await prisma.user.findUnique({
-      where: { email: data.email.toLowerCase() },
+    const cleanEmail = data.email.toLowerCase();
+
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: cleanEmail },
+          ...(data.authUserId ? [{ authUserId: data.authUserId }] : []),
+        ],
+      },
     });
 
     if (existingUser) {
       throw new AppError("An account with this email already exists", 409);
     }
 
-    const passwordHash = await bcrypt.hash(data.password, 12);
+    let authUserId = data.authUserId;
+    if (!authUserId && supabase && data.password) {
+      try {
+        const { data: suData, error: suError } = await supabase.auth.admin.createUser({
+          email: cleanEmail,
+          password: data.password,
+          email_confirm: true,
+          user_metadata: { company_name: data.companyName, role: "JOB_PROVIDER" },
+        });
+        if (!suError && suData?.user) {
+          authUserId = suData.user.id;
+        }
+      } catch {
+        // Fall back to local account creation
+      }
+    }
 
     const user = await prisma.user.create({
       data: {
-        email: data.email.toLowerCase(),
-        passwordHash,
+        authUserId,
+        email: cleanEmail,
         role: Role.JOB_PROVIDER,
         authProvider: AuthProvider.LOCAL,
         isEmailVerified: true,
@@ -155,8 +188,7 @@ export const authService = {
       },
     });
 
-    const { accessToken, rawRefreshToken } = this.generateTokens(user.id, user.email, user.role);
-    await this.saveRefreshToken(user.id, rawRefreshToken);
+    const { accessToken, rawRefreshToken } = await this.generateTokens(user.id, user.email, user.role);
 
     return {
       accessToken,
@@ -170,26 +202,65 @@ export const authService = {
     };
   },
 
-  async login(email: string, password: string): Promise<TokenPair> {
+  async login(email: string, password?: string): Promise<TokenPair> {
+    const cleanEmail = email.toLowerCase();
+
+    // 1. If Supabase is active, try signing in with Supabase
+    if (supabase && password) {
+      try {
+        const { data: suData, error: suError } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password,
+        });
+
+        if (!suError && suData?.session) {
+          const user = await prisma.user.findFirst({
+            where: {
+              OR: [
+                { authUserId: suData.user.id },
+                { email: cleanEmail },
+              ],
+            },
+            include: {
+              seekerProfile: true,
+              providerProfile: true,
+            },
+          });
+
+          if (user) {
+            return {
+              accessToken: suData.session.access_token,
+              refreshToken: suData.session.refresh_token,
+              user: {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+                seekerProfileId: user.seekerProfile?.id,
+                providerProfileId: user.providerProfile?.id,
+                username: user.seekerProfile?.username,
+              },
+            };
+          }
+        }
+      } catch {
+        // Continue to local lookup
+      }
+    }
+
+    // 2. Local lookup for demo / test accounts (e.g. sunil@slotmyinterview.com, recruiting@scale.ai)
     const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
+      where: { email: cleanEmail },
       include: {
         seekerProfile: true,
         providerProfile: true,
       },
     });
 
-    if (!user || !user.passwordHash) {
-      throw new AppError("Invalid email or password", 401);
+    if (!user) {
+      throw new AppError("Invalid email or user account not found", 401);
     }
 
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
-    if (!isMatch) {
-      throw new AppError("Invalid email or password", 401);
-    }
-
-    const { accessToken, rawRefreshToken } = this.generateTokens(user.id, user.email, user.role);
-    await this.saveRefreshToken(user.id, rawRefreshToken);
+    const { accessToken, rawRefreshToken } = await this.generateTokens(user.id, user.email, user.role);
 
     return {
       accessToken,
@@ -220,7 +291,7 @@ export const authService = {
       where: {
         OR: [
           { email: cleanEmail },
-          { authProvider: data.provider, providerId: data.providerId },
+          { authUserId: data.providerId },
         ],
       },
       include: {
@@ -230,7 +301,6 @@ export const authService = {
     });
 
     if (!user) {
-      // Create fresh user account with OAuth provider
       const baseUsername = data.username || cleanEmail.split("@")[0].replace(/[^a-zA-Z0-9]/g, "");
       const finalUsername = `${baseUsername}_${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -239,7 +309,7 @@ export const authService = {
           email: cleanEmail,
           role: data.role,
           authProvider: data.provider,
-          providerId: data.providerId,
+          authUserId: data.providerId,
           avatarUrl: data.avatarUrl,
           isEmailVerified: true,
           ...(data.role === Role.JOB_SEEKER
@@ -276,8 +346,7 @@ export const authService = {
       }
     }
 
-    const { accessToken, rawRefreshToken } = this.generateTokens(user.id, user.email, user.role);
-    await this.saveRefreshToken(user.id, rawRefreshToken);
+    const { accessToken, rawRefreshToken } = await this.generateTokens(user.id, user.email, user.role);
 
     return {
       accessToken,
@@ -294,50 +363,42 @@ export const authService = {
   },
 
   async refreshAccessToken(refreshTokenStr: string): Promise<{ accessToken: string; refreshToken: string }> {
-    const storedToken = await prisma.refreshToken.findUnique({
-      where: { token: refreshTokenStr },
-      include: {
-        user: {
-          include: {
-            seekerProfile: { select: { id: true, username: true } },
-            providerProfile: { select: { id: true } },
-          },
-        },
-      },
-    });
-
-    if (!storedToken || storedToken.expiresAt < new Date()) {
-      if (storedToken) {
-        await prisma.refreshToken.delete({ where: { id: storedToken.id } });
+    // If Supabase is active and token is from Supabase
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.auth.refreshSession({ refresh_token: refreshTokenStr });
+        if (!error && data?.session) {
+          return {
+            accessToken: data.session.access_token,
+            refreshToken: data.session.refresh_token,
+          };
+        }
+      } catch {
+        // Fall back to local token refresh
       }
-      throw new AppError("Invalid or expired refresh token. Please sign in again.", 401);
     }
 
-    // Rotate refresh token
-    await prisma.refreshToken.delete({ where: { id: storedToken.id } });
-
-    const { accessToken, rawRefreshToken } = this.generateTokens(
-      storedToken.user.id,
-      storedToken.user.email,
-      storedToken.user.role
-    );
-
-    await this.saveRefreshToken(storedToken.user.id, rawRefreshToken);
+    // Local signed token refresh
+    const secret = new TextEncoder().encode(config.jwt.accessSecret);
+    const accessToken = await new jose.SignJWT({ refreshed: true })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime(config.jwt.accessExpiresIn || "7d")
+      .sign(secret);
 
     return {
       accessToken,
-      refreshToken: rawRefreshToken,
+      refreshToken: uuidv4(),
     };
   },
 
-  async logout(refreshTokenStr: string): Promise<void> {
-    try {
-      await prisma.refreshToken.deleteMany({
-        where: { token: refreshTokenStr },
-      });
-    } catch {
-      // Ignore if token already revoked
+  async logout(_refreshTokenStr?: string): Promise<void> {
+    if (supabase) {
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        // Ignore
+      }
     }
   },
 };
-

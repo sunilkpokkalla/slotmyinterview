@@ -11,6 +11,15 @@ export const config = {
 
   db: {
     url: process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/slotmyinterview?schema=public",
+    directUrl: process.env.DIRECT_URL || process.env.DATABASE_URL,
+  },
+
+  supabase: {
+    url: process.env.SUPABASE_URL || "https://lrxdcfcqkspzgtqngrae.supabase.co",
+    anonKey: process.env.SUPABASE_ANON_KEY || "",
+    serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
+    jwtSecret: process.env.SUPABASE_JWT_SECRET || "",
+    storageBucket: process.env.SUPABASE_STORAGE_BUCKET || "slotmyinterview-media",
   },
 
   redis: {

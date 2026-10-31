@@ -4,6 +4,7 @@ import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 import { config } from "../config/env.js";
 import { logger } from "../config/logger.js";
+import { supabase } from "../config/supabase.js";
 
 // Ensure local uploads directory exists
 if (!fs.existsSync(config.storage.uploadDir)) {
@@ -39,18 +40,56 @@ export const uploadMiddleware = multer({
 
 export const storageService = {
   async saveFile(file: Express.Multer.File): Promise<string> {
+    // 1. Supabase Storage: If Supabase client is connected
+    if (supabase) {
+      try {
+        const bucket = config.supabase.storageBucket || "slotmyinterview-media";
+        const fileBuffer = fs.readFileSync(file.path);
+        
+        const { data, error } = await supabase.storage
+          .from(bucket)
+          .upload(file.filename, fileBuffer, {
+            contentType: file.mimetype,
+            upsert: true,
+          });
+
+        if (!error && data) {
+          const { data: publicData } = supabase.storage
+            .from(bucket)
+            .getPublicUrl(file.filename);
+
+          logger.info(`Uploaded file ${file.filename} to Supabase Storage: ${publicData.publicUrl}`);
+          return publicData.publicUrl;
+        } else {
+          logger.warn(`Supabase storage upload: ${error?.message}. Using local storage fallback.`);
+        }
+      } catch (err: any) {
+        logger.warn(`Supabase storage exception: ${err.message}. Using local storage fallback.`);
+      }
+    }
+
+    // 2. AWS S3 fallback
     if (config.storage.provider === "s3" && config.storage.s3.accessKeyId) {
-      // In production S3 environment, upload to AWS S3 using AWS SDK / S3Client
       logger.info(`Simulated S3 upload for file ${file.filename} to bucket ${config.storage.s3.bucket}`);
       return `https://${config.storage.s3.bucket}.s3.${config.storage.s3.region}.amazonaws.com/${file.filename}`;
     }
 
-    // Default: Local storage URL served by Express static middleware
+    // 3. Default: Local storage URL served by Express static middleware
     return `${config.apiBaseUrl}/uploads/${file.filename}`;
   },
 
   async deleteFile(fileUrl: string): Promise<void> {
     try {
+      if (supabase && fileUrl.includes("/storage/v1/object/public/")) {
+        const parts = fileUrl.split("/storage/v1/object/public/")[1]?.split("/");
+        if (parts && parts.length >= 2) {
+          const bucket = parts[0];
+          const filename = parts.slice(1).join("/");
+          await supabase.storage.from(bucket).remove([filename]);
+          return;
+        }
+      }
+
       if (fileUrl.includes("/uploads/")) {
         const filename = fileUrl.split("/uploads/").pop();
         if (filename) {
@@ -65,4 +104,3 @@ export const storageService = {
     }
   },
 };
-
