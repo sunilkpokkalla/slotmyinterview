@@ -1,9 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Terminal as TerminalIcon, ShieldAlert, CheckCircle, FileCode } from "lucide-react";
+import { submitLead } from "@/app/actions/leads";
 
 export function Hero() {
+  const [leadState, setLeadState] = useState<{ kind: "idle" } | { kind: "pending" } | { kind: "ok" | "error"; text: string }>({ kind: "idle" });
   return (
     <section className="relative overflow-hidden bg-ink-0 pt-24 pb-20">
       
@@ -34,20 +37,13 @@ export function Hero() {
             const form = e.currentTarget;
             const input = form.querySelector("input") as HTMLInputElement;
             if (!input.value) return;
-            try {
-              const res = await fetch("/api/leads", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: input.value })
-              });
-              const data = await res.json();
-              if (data.success) {
-                alert("Thank you for signing up! Your email has been registered in our campaign database.");
-                input.value = "";
-              }
-            } catch (err) {
-              alert("Submitted successfully!");
+            setLeadState({ kind: "pending" });
+            const res = await submitLead({ email: input.value });
+            if (res.ok) {
+              setLeadState({ kind: "ok", text: res.message ?? "Thanks!" });
               input.value = "";
+            } else {
+              setLeadState({ kind: "error", text: res.error });
             }
           }}>
             <input 
@@ -56,10 +52,15 @@ export function Hero() {
               placeholder="What's your work email?" 
               className="flex-1 px-4 py-3 rounded-lg text-sm bg-transparent outline-none border-0 text-fg-0 font-mono placeholder:text-fg-3"
             />
-            <button type="submit" className="btn btn-accent whitespace-nowrap text-sm px-6 py-3">
-              Start Vetting Free
+            <button type="submit" disabled={leadState.kind === "pending"} className="btn btn-accent whitespace-nowrap text-sm px-6 py-3">
+              {leadState.kind === "pending" ? "Sending…" : "Start Vetting Free"}
             </button>
           </form>
+          {(leadState.kind === "ok" || leadState.kind === "error") && (
+            <p role={leadState.kind === "error" ? "alert" : "status"} className={`mt-3 text-xs font-mono ${leadState.kind === "error" ? "text-rose-400" : "text-emerald-400"}`}>
+              {leadState.text}
+            </p>
+          )}
           <p className="mt-3 text-xs text-fg-3 font-mono">
             Direct calendar scheduling integrations included. Zero recruiter outreach needed.
           </p>

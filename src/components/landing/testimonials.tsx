@@ -102,7 +102,7 @@ export function Testimonials() {
                     transition={{ duration: 0.4 }}
                     className="text-lg md:text-xl font-medium text-fg-1 leading-relaxed italic"
                   >
-                    "{current.quote}"
+                    &ldquo;{current.quote}&rdquo;
                   </motion.p>
                 </AnimatePresence>
               </div>

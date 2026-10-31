@@ -9,7 +9,7 @@ import posts from '@/data/blog-posts.json';
 
 // 1. Fetch data helper
 function getPost(slug: string) {
-  return posts.find((p: any) => p.slug === slug) || null;
+  return posts.find((p) => p.slug === slug) || null;
 }
 
 // 2. Generate dynamic SEO metadata
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 // 3. Optional: Generate static params at build time for fast routing
 export async function generateStaticParams() {
-  return posts.map((post: any) => ({
+  return posts.map((post) => ({
     slug: post.slug,
   }));
 }

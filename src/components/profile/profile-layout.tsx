@@ -20,77 +20,27 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { api } from "@/lib/api";
+import type { CandidateData } from "./types";
+import { updateAvailability } from "@/app/actions/seeker";
+import { VideoPitchPlayer } from "./video-pitch-player";
+import { BookInterview } from "./book-interview";
 
-export interface CandidateData {
-  id?: string;
-  name: string;
-  headline: string;
-  location: string;
-  about: string;
-  avatarUrl: string;
-  github?: string;
-  linkedin?: string;
-  email: string;
-  username?: string;
-  workAuthType?: string;
-  availability?: "ACTIVELY_LOOKING" | "OPEN_TO_OPPORTUNITIES" | "NOT_LOOKING";
-  availabilityBadge?: {
-    status: string;
-    color: "green" | "orange" | "red";
-    label: string;
-  };
-  compositeScore?: number;
-  githubScore?: number;
-  assessmentScore?: number;
-  completenessScore?: number;
-  endorsementScore?: number;
-  experience: {
-    id: string;
-    company: string;
-    role: string;
-    startDate: string;
-    endDate?: string;
-    description: string[];
-    logoUrl?: string;
-    link?: string;
-  }[];
-  education?: {
-    id: string;
-    school: string;
-    degree: string;
-    startDate: string;
-    endDate: string;
-  }[];
-  skills: string[];
-  nonTechSkills?: string[];
-  portfolioLinks?: {
-    id: string;
-    platform: string;
-    url: string;
-    title?: string;
-    detectedTechStack: string[];
-  }[];
-  portfolioByTechnology?: Record<string, any[]>;
-  endorsements?: {
-    id: string;
-    skillName: string;
-    comment?: string;
-    endorser?: {
-      fullName: string;
-      username: string;
-      photoUrl?: string;
-      headline?: string;
-    };
-  }[];
-}
+export type { CandidateData } from "./types";
+
+export type ProfileViewer = {
+  isOwner: boolean;
+  isRecruiter: boolean;
+  isSignedIn: boolean;
+  name?: string;
+  email?: string;
+};
 
 interface ProfileLayoutProps {
   candidate: CandidateData;
+  viewer: ProfileViewer;
 }
 
-export function ProfileLayout({ candidate: initialCandidate }: ProfileLayoutProps) {
-  const [candidate, setCandidate] = useState(initialCandidate);
+export function ProfileLayout({ candidate, viewer }: ProfileLayoutProps) {
   const [availability, setAvailability] = useState(candidate.availability || "ACTIVELY_LOOKING");
   const [isUpdatingAvailability, setIsUpdatingAvailability] = useState(false);
 
@@ -109,16 +59,15 @@ export function ProfileLayout({ candidate: initialCandidate }: ProfileLayoutProp
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } }
   };
 
+  // Only the profile owner sees the toggle; the server action re-checks ownership.
   const handleAvailabilityChange = async (newStatus: "ACTIVELY_LOOKING" | "OPEN_TO_OPPORTUNITIES" | "NOT_LOOKING") => {
+    if (!viewer.isOwner) return;
+    const previous = availability;
     setAvailability(newStatus);
     setIsUpdatingAvailability(true);
-    try {
-      await api.seekers.updateAvailability(newStatus);
-    } catch {
-      // Ignored
-    } finally {
-      setIsUpdatingAvailability(false);
-    }
+    const res = await updateAvailability(newStatus);
+    if (!res.ok) setAvailability(previous);
+    setIsUpdatingAvailability(false);
   };
 
   const availabilityColorMap = {
@@ -185,7 +134,7 @@ export function ProfileLayout({ candidate: initialCandidate }: ProfileLayoutProp
                   </div>
 
                   {/* Composite Talent Score Pill */}
-                  {candidate.compositeScore && (
+                  {(candidate.compositeScore ?? 0) > 0 && (
                     <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-amber-400 text-xs font-bold shadow-sm">
                       <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                       Score: {candidate.compositeScore}/100
@@ -210,7 +159,7 @@ export function ProfileLayout({ candidate: initialCandidate }: ProfileLayoutProp
                       Auth: {candidate.workAuthType}
                     </div>
                   )}
-                  {candidate.email && (
+                  {candidate.email && viewer.isOwner && (
                     <div className="flex items-center gap-1.5">
                       <Mail className="w-4 h-4 text-slate-400" />
                       {candidate.email}
@@ -229,7 +178,8 @@ export function ProfileLayout({ candidate: initialCandidate }: ProfileLayoutProp
                   </div>
 
                   {/* Availability Toggle Radio Group */}
-                  <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+                  {viewer.isOwner && (
+                  <div className={`flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold ${isUpdatingAvailability ? "opacity-60" : ""}`}>
                     <button
                       onClick={() => handleAvailabilityChange("ACTIVELY_LOOKING")}
                       className={`px-2.5 py-1 rounded-lg transition-all ${
@@ -261,6 +211,7 @@ export function ProfileLayout({ candidate: initialCandidate }: ProfileLayoutProp
                       🔴 Not Looking
                     </button>
                   </div>
+                  )}
                 </div>
 
                 {/* Social Profiles & CTA */}
@@ -285,19 +236,43 @@ export function ProfileLayout({ candidate: initialCandidate }: ProfileLayoutProp
                       LinkedIn
                     </Link>
                   )}
-                  <Link
-                    href={`/search`}
-                    className="flex items-center gap-2 px-5 py-2 bg-[#6B47ED] hover:bg-[#5835dc] text-white rounded-xl text-sm font-semibold transition-all ml-auto shadow-sm"
-                  >
-                    Slot An Interview
-                  </Link>
+                  {candidate.calcomLink && !viewer.isOwner && (
+                    <a
+                      href="#book"
+                      className="flex items-center gap-2 px-5 py-2 bg-[#6B47ED] hover:bg-[#5835dc] text-white rounded-xl text-sm font-semibold transition-all ml-auto shadow-sm"
+                    >
+                      Slot An Interview
+                    </a>
+                  )}
+                  {viewer.isOwner && (
+                    <Link
+                      href="/dashboard"
+                      className="flex items-center gap-2 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-sm font-semibold transition-all ml-auto shadow-sm"
+                    >
+                      Edit profile
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
           </motion.div>
 
+          {/* 60-second video pitch */}
+          {candidate.videoPitchUrl && (
+            <motion.div variants={itemVariants}>
+              <VideoPitchPlayer src={candidate.videoPitchUrl} name={candidate.name} durationSec={candidate.videoPitchDurationSec} />
+            </motion.div>
+          )}
+
+          {/* Book an interview on the candidate's Cal.com calendar */}
+          {candidate.calcomLink && !viewer.isOwner && (
+            <motion.div variants={itemVariants} id="book" className="scroll-mt-28">
+              <BookInterview calLink={candidate.calcomLink} candidateName={candidate.name} viewer={viewer} />
+            </motion.div>
+          )}
+
           {/* Composite Talent Score Metrics Breakdown */}
-          {candidate.compositeScore && (
+          {(candidate.compositeScore ?? 0) > 0 && (
             <motion.div variants={itemVariants} className="bg-slate-900 text-white rounded-3xl p-8 border border-slate-800 shadow-lg">
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -315,22 +290,22 @@ export function ProfileLayout({ candidate: initialCandidate }: ProfileLayoutProp
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/60">
                   <div className="text-xs text-slate-400 mb-1">GitHub Quality (35%)</div>
-                  <div className="text-2xl font-bold text-emerald-400">{candidate.githubScore || 95}%</div>
+                  <div className="text-2xl font-bold text-emerald-400">{Math.round(candidate.githubScore ?? 0)}%</div>
                   <div className="text-[11px] text-slate-500 mt-1">AST & Commit Depth</div>
                 </div>
                 <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/60">
                   <div className="text-xs text-slate-400 mb-1">Assessments (25%)</div>
-                  <div className="text-2xl font-bold text-indigo-400">{candidate.assessmentScore || 90}%</div>
+                  <div className="text-2xl font-bold text-indigo-400">{Math.round(candidate.assessmentScore ?? 0)}%</div>
                   <div className="text-[11px] text-slate-500 mt-1">Completed Challenges</div>
                 </div>
                 <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/60">
                   <div className="text-xs text-slate-400 mb-1">Completeness (25%)</div>
-                  <div className="text-2xl font-bold text-sky-400">{candidate.completenessScore || 100}%</div>
+                  <div className="text-2xl font-bold text-sky-400">{Math.round(candidate.completenessScore ?? 0)}%</div>
                   <div className="text-[11px] text-slate-500 mt-1">Profile & Tech Taxonomy</div>
                 </div>
                 <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/60">
                   <div className="text-xs text-slate-400 mb-1">Endorsements (15%)</div>
-                  <div className="text-2xl font-bold text-purple-400">{candidate.endorsementScore || 85}%</div>
+                  <div className="text-2xl font-bold text-purple-400">{Math.round(candidate.endorsementScore ?? 0)}%</div>
                   <div className="text-[11px] text-slate-500 mt-1">Verified Peer Reviews</div>
                 </div>
               </div>
@@ -502,7 +477,7 @@ export function ProfileLayout({ candidate: initialCandidate }: ProfileLayoutProp
                           {end.skillName}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-600 italic">"{end.comment}"</p>
+                      <p className="text-xs text-slate-600 italic">&ldquo;{end.comment}&rdquo;</p>
                     </div>
                   </div>
                 ))}

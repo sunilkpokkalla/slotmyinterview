@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { 
   Menu, X, ChevronDown, ShieldCheck, GitBranch, Terminal, 
   CodeSquare, Fingerprint, Search, Sparkles, 
@@ -21,6 +22,19 @@ export function Navbar() {
   const toggleDropdown = (menu: string) => {
     setActiveDropdown(activeDropdown === menu ? null : menu);
   };
+
+  // Client-side session check keeps public pages statically renderable.
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => {
+    try {
+      const supabase = createSupabaseBrowserClient();
+      supabase.auth.getSession().then(({ data }: { data: { session: unknown } }) => setSignedIn(Boolean(data.session)));
+      const { data } = supabase.auth.onAuthStateChange((_e: unknown, session: unknown) => setSignedIn(Boolean(session)));
+      return () => data.subscription.unsubscribe();
+    } catch {
+      // Supabase env not configured: stay in signed-out state.
+    }
+  }, []);
 
   const closeAll = () => {
     setActiveDropdown(null);
@@ -286,9 +300,11 @@ export function Navbar() {
               Dashboard
             </Link>
 
-            <Link href="/login" className="text-xs font-medium text-fg-2 hover:text-white transition-colors px-3 py-1.5 rounded-full hover:bg-white/5 whitespace-nowrap">
-              Sign in
-            </Link>
+            {!signedIn && (
+              <Link href="/login" className="text-xs font-medium text-fg-2 hover:text-white transition-colors px-3 py-1.5 rounded-full hover:bg-white/5 whitespace-nowrap">
+                Sign in
+              </Link>
+            )}
 
             {/* Premium Button-in-Button CTA */}
             <Link 

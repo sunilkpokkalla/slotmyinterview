@@ -1,0 +1,432 @@
+// Supabase Postgres:
+//   DATABASE_URL -> transaction pooler (port 6543, ?pgbouncer=true) used at runtime
+//   DIRECT_URL   -> direct/session connection (port 5432) used by `prisma db push` / migrations
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  JOB_SEEKER
+  JOB_PROVIDER
+  ADMIN
+}
+
+enum AuthProvider {
+  LOCAL
+  GITHUB
+  GOOGLE
+  LINKEDIN
+}
+
+enum AvailabilityStatus {
+  ACTIVELY_LOOKING // Green
+  OPEN_TO_OPPORTUNITIES // Orange
+  NOT_LOOKING // Red
+}
+
+enum WorkLocation {
+  REMOTE
+  HYBRID
+  ONSITE
+}
+
+enum WorkType {
+  FULL_TIME
+  W2
+  CORP_TO_CORP
+  CORP_TO_H1B
+}
+
+enum PipelineStage {
+  SUBMITTED
+  TASKED
+  SHORTLISTED
+  INTERVIEWED
+  OFFERED
+  REJECTED
+}
+
+enum TaskType {
+  TECHNICAL_CHALLENGE
+  TAKE_HOME
+  VIDEO_INTRODUCTION
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  SUBMITTED
+  REVIEWED
+  PASSED
+  FAILED
+}
+
+enum InterviewFormat {
+  REMOTE
+  IN_PERSON
+}
+
+enum InterviewStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  RESCHEDULED
+}
+
+enum CalBookingStatus {
+  CONFIRMED
+  CANCELLED
+  RESCHEDULED
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+}
+
+// Credentials, sessions and OAuth live in Supabase Auth (auth.users).
+// This table holds the app-level account (role + profile) linked by authUserId.
+model User {
+  id              String       @id @default(uuid())
+  authUserId      String?      @unique // Supabase auth.users.id (JWT `sub`)
+  email           String       @unique
+  role            Role         @default(JOB_SEEKER)
+  authProvider    AuthProvider @default(LOCAL)
+  isEmailVerified Boolean      @default(false)
+  avatarUrl       String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  // Relationships
+  seekerProfile   SeekerProfile?
+  providerProfile ProviderProfile?
+  calBookings     CalBooking[]     @relation("RecruiterCalBookings")
+
+  @@index([email])
+}
+
+model SkillCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique // e.g. "Languages", "Frameworks", "Cloud", "Databases", "DevOps"
+  slug        String   @unique
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  skills Skill[]
+  jobs   Job[]
+}
+
+model Skill {
+  id         String        @id @default(uuid())
+  name       String        @unique // e.g. "TypeScript", "React", "PostgreSQL", "AWS"
+  slug       String        @unique
+  categoryId String
+  category   SkillCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  seekerSkills  SeekerSkill[]
+  requiredJobs  Job[]         @relation("JobRequiredSkills")
+  preferredJobs Job[]         @relation("JobPreferredSkills")
+
+  @@index([categoryId])
+}
+
+model SeekerProfile {
+  id            String             @id @default(uuid())
+  userId        String             @unique
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  username      String             @unique // slotmyinterview.com/u/:username
+  fullName      String
+  photoUrl      String?
+  headline      String? // one-line headline
+  bio           String? // short summary bio
+  location      String?
+  workAuthType  String? // e.g. "US Citizen", "Green Card", "H1B", "CPT/OPT", "EU Citizen"
+  availability  AvailabilityStatus @default(ACTIVELY_LOOKING)
+  nonTechSkills String[] // separate free-text list for non-technical skills
+
+  // 60-second video pitch (Supabase Storage object path inside the pitch-videos bucket)
+  videoPitchPath        String?
+  videoPitchDurationSec Int?
+  videoPitchUpdatedAt   DateTime?
+
+  // Cal.com scheduling: "<cal username>/<event slug>", e.g. "jane/30min"
+  calcomLink          String?
+  // Per-candidate secret used to verify Cal.com webhooks sent to /api/webhooks/calcom/<seekerId>
+  calcomWebhookSecret String?
+
+  // Alert settings
+  alertFrequencyMaxPerWeek Int     @default(3)
+  alertsPaused             Boolean @default(false)
+
+  // Scoring Breakdown & Composite Talent Score
+  compositeScore    Float     @default(0.0) // 0 - 100
+  githubScore       Float     @default(0.0) // commits, repo quality
+  assessmentScore   Float     @default(0.0) // challenge results
+  completenessScore Float     @default(0.0) // profile completeness %
+  endorsementScore  Float     @default(0.0) // peer endorsements
+  lastScoredAt      DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  skills           SeekerSkill[]
+  experiences      Experience[]
+  portfolioLinks   PortfolioLink[]
+  socialProfiles   SocialProfile[]
+  submissions      Submission[]
+  endorsements     Endorsement[]      @relation("SeekerEndorsements")
+  sentEndorsements Endorsement[]      @relation("SentEndorsements")
+  alertDispatches  JobAlertDispatch[]
+  calBookings      CalBooking[]
+
+  @@index([compositeScore])
+  @@index([availability])
+  @@index([location])
+  @@index([workAuthType])
+}
+
+model SeekerSkill {
+  id           String        @id @default(uuid())
+  seekerId     String
+  seeker       SeekerProfile @relation(fields: [seekerId], references: [id], onDelete: Cascade)
+  skillId      String
+  skill        Skill         @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  displayOrder Int           @default(0) // Draggable ordering within category
+  yearsExp     Float?
+  createdAt    DateTime      @default(now())
+
+  @@unique([seekerId, skillId])
+  @@index([seekerId])
+  @@index([skillId])
+}
+
+model Experience {
+  id          String        @id @default(uuid())
+  seekerId    String
+  seeker      SeekerProfile @relation(fields: [seekerId], references: [id], onDelete: Cascade)
+  company     String
+  role        String
+  startDate   DateTime
+  endDate     DateTime? // Nullable for present role
+  isCurrent   Boolean       @default(false)
+  description String
+  link        String? // optional link
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([seekerId])
+}
+
+model PortfolioLink {
+  id                String        @id @default(uuid())
+  seekerId          String
+  seeker            SeekerProfile @relation(fields: [seekerId], references: [id], onDelete: Cascade)
+  platform          String // "GitHub", "Behance", "Dribbble", "Personal", "Other"
+  url               String
+  title             String?
+  detectedTechStack String[] // auto-grouped by detected technology
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([seekerId])
+}
+
+model SocialProfile {
+  id        String        @id @default(uuid())
+  seekerId  String
+  seeker    SeekerProfile @relation(fields: [seekerId], references: [id], onDelete: Cascade)
+  platform  String // "LinkedIn", "Twitter/X", "Bluesky", "YouTube", "Medium"
+  url       String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([seekerId])
+}
+
+model Endorsement {
+  id         String        @id @default(uuid())
+  seekerId   String
+  seeker     SeekerProfile @relation("SeekerEndorsements", fields: [seekerId], references: [id], onDelete: Cascade)
+  endorserId String
+  endorser   SeekerProfile @relation("SentEndorsements", fields: [endorserId], references: [id], onDelete: Cascade)
+  skillName  String
+  comment    String?
+  createdAt  DateTime      @default(now())
+
+  @@unique([seekerId, endorserId, skillName])
+  @@index([seekerId])
+}
+
+model ProviderProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName String
+  logoUrl     String?
+  website     String
+  description String
+  location    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  jobs Job[]
+}
+
+model Job {
+  id           String          @id @default(uuid())
+  providerId   String
+  provider     ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  title        String
+  description  String
+  categoryId   String
+  category     SkillCategory   @relation(fields: [categoryId], references: [id])
+  salaryMin    Int?
+  salaryMax    Int?
+  currency     String          @default("USD")
+  location     String
+  workLocation WorkLocation    @default(REMOTE) // Remote, Hybrid, Onsite
+  workType     WorkType        @default(FULL_TIME) // Full-time, W2, C2C, Corp-to-H1B
+  isActive     Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  // Skill requirements
+  requiredSkills  Skill[] @relation("JobRequiredSkills")
+  preferredSkills Skill[] @relation("JobPreferredSkills")
+
+  // Applications/Submissions
+  submissions     Submission[]
+  interviewSlots  InterviewSlot[]
+  alertDispatches JobAlertDispatch[]
+
+  @@index([providerId])
+  @@index([categoryId])
+  @@index([workLocation])
+  @@index([workType])
+}
+
+model Submission {
+  id        String        @id @default(uuid())
+  jobId     String
+  job       Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  seekerId  String
+  seeker    SeekerProfile @relation(fields: [seekerId], references: [id], onDelete: Cascade)
+  stage     PipelineStage @default(SUBMITTED)
+  notes     String?
+  coverNote String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  // Tasks & Interviews
+  taskAssignments CandidateTask[]
+  interviews      InterviewBooking[]
+
+  @@unique([jobId, seekerId])
+  @@index([jobId, stage])
+  @@index([seekerId])
+}
+
+model CandidateTask {
+  id            String     @id @default(uuid())
+  submissionId  String
+  submission    Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  taskType      TaskType
+  title         String
+  instructions  String
+  deadline      DateTime
+  status        TaskStatus @default(PENDING)
+  submissionUrl String? // github repo, video URL, etc.
+  feedback      String?
+  score         Float? // 0-100
+  assignedAt    DateTime   @default(now())
+  submittedAt   DateTime?
+  reviewedAt    DateTime?
+
+  @@index([submissionId])
+}
+
+model InterviewSlot {
+  id        String          @id @default(uuid())
+  jobId     String
+  job       Job             @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  format    InterviewFormat @default(REMOTE)
+  location  String? // Meeting URL (e.g. Google Meet) or physical address
+  startTime DateTime
+  endTime   DateTime
+  isBooked  Boolean         @default(false)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  booking InterviewBooking?
+
+  @@index([jobId, startTime])
+}
+
+model InterviewBooking {
+  id           String          @id @default(uuid())
+  slotId       String          @unique
+  slot         InterviewSlot   @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  submissionId String
+  submission   Submission      @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  status       InterviewStatus @default(SCHEDULED)
+  notes        String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([submissionId])
+}
+
+model JobAlertDispatch {
+  id       String        @id @default(uuid())
+  seekerId String
+  seeker   SeekerProfile @relation(fields: [seekerId], references: [id], onDelete: Cascade)
+  jobId    String
+  job      Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  sentAt   DateTime      @default(now())
+
+  @@index([seekerId, sentAt])
+  @@index([jobId])
+}
+
+// Interviews booked by recruiters on a candidate's Cal.com calendar
+model CalBooking {
+  id              String           @id @default(uuid())
+  calUid          String           @unique // Cal.com booking uid
+  seekerId        String
+  seeker          SeekerProfile    @relation(fields: [seekerId], references: [id], onDelete: Cascade)
+  recruiterUserId String?
+  recruiter       User?            @relation("RecruiterCalBookings", fields: [recruiterUserId], references: [id], onDelete: SetNull)
+  attendeeEmail   String
+  attendeeName    String?
+  title           String?
+  startTime       DateTime
+  endTime         DateTime
+  meetingUrl      String?
+  status          CalBookingStatus @default(CONFIRMED)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([seekerId, startTime])
+  @@index([recruiterUserId, startTime])
+}
+
+// Marketing leads captured from the homepage form (replaces the JSON file store)
+model Lead {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  source    String     @default("Homepage Hero Lead Form")
+  status    LeadStatus @default(NEW)
+  createdAt DateTime   @default(now())
+}

@@ -12,7 +12,7 @@ export default function LivingPortfoliosPage() {
             Meet the <em>Verifiable Skill Passport.</em>
           </h1>
           <p className="text-xl text-fg-2 leading-relaxed mb-10">
-            A dynamic, continually updating record of a candidate's actual engineering capabilities, automatically synced with AST codebase analysis and sandbox scores.
+            A dynamic, continually updating record of a candidate&apos;s actual engineering capabilities, automatically synced with AST codebase analysis and sandbox scores.
           </p>
           <div className="flex justify-center gap-4">
             <button className="btn btn-primary">
@@ -36,7 +36,7 @@ export default function LivingPortfoliosPage() {
               </div>
               <h3 className="text-xl font-bold text-fg-0 mb-3">Continuous AST Sync</h3>
               <p className="text-fg-2 text-sm leading-relaxed">
-                Every code submission parses live. The platform evaluates codebase structures and updates the passport's structural difficulty score automatically.
+                Every code submission parses live. The platform evaluates codebase structures and updates the passport&apos;s structural difficulty score automatically.
               </p>
             </div>
           </div>

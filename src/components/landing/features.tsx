@@ -45,7 +45,7 @@ export function Features() {
               <div>
                 <h3 className="text-xl font-bold text-fg-0 mb-3">Verifiable Skill Passports</h3>
                 <p className="text-sm text-fg-2 leading-relaxed mb-8">
-                  Living cryptographic records of a developer's production code depth, sandbox scores, and identity validation status.
+                  Living cryptographic records of a developer&apos;s production code depth, sandbox scores, and identity validation status.
                 </p>
 
                 {/* Vetting badges */}

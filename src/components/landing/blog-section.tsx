@@ -6,8 +6,10 @@ import Link from "next/link";
 import { BlogCover } from "@/components/blog/blog-cover";
 import { useEffect, useState } from "react";
 
+type BlogPost = typeof import("@/data/blog-posts.json")[number];
+
 export function BlogSection() {
-  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
 
   useEffect(() => {
     // Dynamically import the generated JSON data

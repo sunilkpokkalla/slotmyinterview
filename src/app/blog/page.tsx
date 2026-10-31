@@ -42,7 +42,7 @@ export default function BlogIndexPage() {
       {/* Grid */}
       <div className="flex-1 max-w-7xl mx-auto px-6 py-16 w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.map((post: any) => (
+          {posts.map((post) => (
             <Link 
               href={`/blog/${post.slug}`} 
               key={post.id} 

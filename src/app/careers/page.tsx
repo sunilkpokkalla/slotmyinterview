@@ -6,7 +6,7 @@ export default function CareersPage() {
       <div className="text-center mb-16">
         <h1 className="text-5xl font-extrabold mb-6 tracking-tight">Join Our Team</h1>
         <p className="text-xl text-slate-500 max-w-2xl mx-auto">
-          Help us build the world's most advanced capability-based hiring platform and eliminate the resume forever.
+          Help us build the world&apos;s most advanced capability-based hiring platform and eliminate the resume forever.
         </p>
       </div>
 
