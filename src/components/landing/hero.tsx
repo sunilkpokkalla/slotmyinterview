@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Terminal as TerminalIcon, ShieldAlert, CheckCircle, FileCode } from "lucide-react";
+import { ArrowRight, Terminal as TerminalIcon, ShieldAlert, CheckCircle, FileCode, Video, Calendar, Sparkles } from "lucide-react";
 import { submitLead } from "@/app/actions/leads";
 
 export function Hero() {
@@ -64,6 +65,34 @@ export function Hero() {
           <p className="mt-3 text-xs text-fg-3 font-mono">
             Direct calendar scheduling integrations included. Zero recruiter outreach needed.
           </p>
+
+          {/* Dual persona quick switcher pill */}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-xs">
+            <span className="text-fg-3">Are you a software engineer?</span>
+            <Link
+              href="/signup"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-medium border border-purple-500/20 transition-all hover:scale-[1.02]"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+              <span>Claim your verified vanity profile (/u/username) →</span>
+            </Link>
+          </div>
+
+          {/* Feature Highlights Pills */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5 text-xs text-fg-3 font-mono">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.03] border border-hair">
+              <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Cal.com Direct Scheduling</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.03] border border-hair">
+              <Video className="w-3.5 h-3.5 text-indigo-400" />
+              <span>60s Video Pitches</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.03] border border-hair">
+              <CheckCircle className="w-3.5 h-3.5 text-purple-400" />
+              <span>AST Code Proofs</span>
+            </span>
+          </div>
         </div>
 
         {/* Interactive Dashboard / Console Double-Bezel Mockup */}
@@ -165,10 +194,10 @@ export function Hero() {
 
               {/* Booking CTA button */}
               <div className="mt-6">
-                <button className="w-full btn btn-primary flex items-center justify-center gap-2">
+                <Link href="/search" className="w-full btn btn-primary flex items-center justify-center gap-2">
                   <span>Slot an Interview</span>
                   <ArrowRight className="w-4 h-4" />
-                </button>
+                </Link>
               </div>
 
             </div>

@@ -56,7 +56,7 @@ export function DemoCta() {
   );
 
   return (
-    <section className="bg-[#111111] text-white py-24 relative overflow-hidden">
+    <section className="bg-ink-0 border-t border-hair text-white py-24 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           
@@ -67,19 +67,27 @@ export function DemoCta() {
             viewport={{ once: true }}
             className="max-w-xl"
           >
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.1]">
-              See the SlotMyInterview<br />platform in action
+            <span className="eyebrow">Instant Access</span>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mt-4 mb-6 leading-[1.1] text-fg-0">
+              See SlotMyInterview<br />in live production.
             </h2>
-            <p className="text-slate-400 text-lg mb-10 leading-relaxed max-w-lg">
-              Get a demo and discover how leading engineering teams use SlotMyInterview to supercharge their hiring engine and secure top AI talent.
+            <p className="text-fg-2 text-base sm:text-lg mb-8 leading-relaxed max-w-lg">
+              Start vetting verified software engineers with zero recruiter outreach. Or claim your living vanity URL and let employers book direct slots.
             </p>
             
-            <Link href="/demo">
-              <Button size="lg" className="bg-white text-black hover:bg-slate-200 text-base font-semibold h-12 px-8 transition-colors">
-                Get a demo
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </Link>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link href="/signup">
+                <Button size="lg" className="bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold h-11 px-6 rounded-full shadow-lg shadow-purple-500/25 transition-all">
+                  <span>Create Free Account</span>
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
+              <Link href="/search">
+                <Button size="lg" variant="outline" className="border-hair hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.06] text-fg-1 text-sm font-semibold h-11 px-6 rounded-full transition-all">
+                  Browse Verified Talent
+                </Button>
+              </Link>
+            </div>
           </motion.div>
 
           {/* Right Animated Isometric Cubes */}
