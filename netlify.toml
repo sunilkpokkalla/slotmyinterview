@@ -1,0 +1,8 @@
+[build]
+  command = "prisma generate && npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NETLIFY_USE_NPM_CI = "false"
+  NPM_FLAGS = "--include=optional"
