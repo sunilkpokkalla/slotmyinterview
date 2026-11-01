@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
-import { Building, User } from "lucide-react";
+import { Building, User, Mail, Lock, UserCheck, Globe, Sparkles, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { signUp, type AuthFormState } from "@/app/actions/auth";
 
-const inputClass = "h-10 text-xs bg-slate-50 border-slate-200 rounded-xl";
+const inputClass = "h-11 text-xs bg-white/[0.04] border-white/10 rounded-xl text-white placeholder:text-fg-3 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50";
 
 export function SignupForm({ initialType }: { initialType: "candidate" | "employer" }) {
   const [accountType, setAccountType] = useState(initialType);
@@ -15,25 +15,40 @@ export function SignupForm({ initialType }: { initialType: "candidate" | "employ
 
   if (state?.message) {
     return (
-      <div className="w-full max-w-[460px] bg-white rounded-3xl shadow-xl p-8 border border-slate-100 text-center">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Check your inbox</h1>
-        <p className="text-sm text-slate-600">{state.message}</p>
-        <Link href="/login" className="inline-block mt-6 text-sm font-semibold text-[#6B47ED] hover:underline">Go to sign in</Link>
+      <div className="w-full max-w-[460px] rounded-3xl border border-white/10 bg-ink-1/90 backdrop-blur-2xl shadow-2xl p-8 text-center text-white">
+        <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center mb-4">
+          <CheckCircle2 className="w-7 h-7" />
+        </div>
+        <h1 className="text-2xl font-bold text-white mb-2">Check your inbox</h1>
+        <p className="text-xs text-fg-2 leading-relaxed max-w-sm mx-auto">{state.message}</p>
+        <Link 
+          href="/login" 
+          className="inline-block mt-6 px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-xs font-semibold text-white border border-white/10 transition-colors"
+        >
+          Go to Sign In →
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-[460px] bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
+    <div className="w-full max-w-[480px] rounded-3xl border border-white/10 bg-ink-1/90 backdrop-blur-2xl shadow-2xl p-8 text-white">
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-slate-900 mb-1">Create your account</h1>
-        <p className="text-slate-500 text-xs">Candidates get booked. Recruiters book directly.</p>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-[11px] font-mono font-medium mb-3">
+          <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+          <span>Proof-Based Talent Network</span>
+        </div>
+        <h1 className="text-2xl font-bold text-white tracking-tight">Create your account</h1>
+        <p className="text-fg-3 text-xs mt-1">
+          {accountType === "candidate" ? "Publish your verified proof & get booked directly." : "Access pre-vetted engineers & direct calendar slotting."}
+        </p>
       </div>
 
-      <div className="flex bg-slate-100 p-1 rounded-2xl mb-6" role="tablist">
+      {/* Account Type Toggle */}
+      <div className="flex bg-white/[0.03] border border-white/10 p-1 rounded-2xl mb-6" role="tablist">
         {([
-          ["candidate", "Candidate", User],
-          ["employer", "Recruiter", Building],
+          ["candidate", "Software Engineer", User],
+          ["employer", "Hiring Recruiter", Building],
         ] as const).map(([value, label, Icon]) => (
           <button
             key={value}
@@ -41,62 +56,115 @@ export function SignupForm({ initialType }: { initialType: "candidate" | "employ
             role="tab"
             aria-selected={accountType === value}
             onClick={() => setAccountType(value)}
-            className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${accountType === value ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+            className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+              accountType === value 
+                ? "bg-purple-600/30 text-white border border-purple-500/40 shadow-sm" 
+                : "text-fg-3 hover:text-white"
+            }`}
           >
-            <Icon className="w-3.5 h-3.5 text-indigo-600" />
+            <Icon className={`w-3.5 h-3.5 ${accountType === value ? "text-purple-400" : "text-fg-3"}`} />
             {label}
           </button>
         ))}
       </div>
 
       {state?.error && (
-        <div role="alert" className="mb-4 text-xs font-medium text-rose-600 bg-rose-50 p-3 rounded-xl border border-rose-200 text-center">
+        <div role="alert" className="mb-5 text-xs font-medium text-rose-300 bg-rose-950/40 border border-rose-500/30 p-3.5 rounded-xl text-center leading-relaxed">
           {state.error}
         </div>
       )}
 
       <form action={formAction} className="flex flex-col gap-3.5">
         <input type="hidden" name="accountType" value={accountType} />
-        <label className="text-xs font-semibold text-slate-700">
-          <span className="block mb-1">Full name</span>
-          <Input name="fullName" required autoComplete="name" placeholder="Jane Doe" className={inputClass} />
+        
+        <label className="text-xs font-medium text-fg-2">
+          <span className="block mb-1.5">Full name</span>
+          <Input 
+            name="fullName" 
+            required 
+            autoComplete="name" 
+            placeholder="Jane Doe" 
+            className={inputClass} 
+          />
         </label>
 
         {accountType === "candidate" ? (
-          <label className="text-xs font-semibold text-slate-700">
-            <span className="block mb-1">Username (your profile will live at /u/username)</span>
-            <Input name="username" required pattern="[a-zA-Z0-9_-]{3,30}" placeholder="janedoe" className={`${inputClass} font-mono`} />
+          <label className="text-xs font-medium text-fg-2">
+            <span className="block mb-1.5">Username (your profile will live at /u/username)</span>
+            <div className="relative">
+              <span className="absolute left-3.5 top-3 text-fg-3 font-mono text-xs">/u/</span>
+              <Input 
+                name="username" 
+                required 
+                pattern="[a-zA-Z0-9_-]{3,30}" 
+                placeholder="janedoe" 
+                className={`${inputClass} pl-10 font-mono`} 
+              />
+            </div>
           </label>
         ) : (
           <>
-            <label className="text-xs font-semibold text-slate-700">
-              <span className="block mb-1">Company name</span>
-              <Input name="companyName" required placeholder="Acme Inc." className={inputClass} />
+            <label className="text-xs font-medium text-fg-2">
+              <span className="block mb-1.5">Company name</span>
+              <Input 
+                name="companyName" 
+                required 
+                placeholder="Acme Systems" 
+                className={inputClass} 
+              />
             </label>
-            <label className="text-xs font-semibold text-slate-700">
-              <span className="block mb-1">Company website</span>
-              <Input name="website" type="url" required placeholder="https://acme.com" className={inputClass} />
+            <label className="text-xs font-medium text-fg-2">
+              <span className="block mb-1.5">Company website</span>
+              <Input 
+                name="website" 
+                type="url" 
+                required 
+                placeholder="https://acme.com" 
+                className={inputClass} 
+              />
             </label>
           </>
         )}
 
-        <label className="text-xs font-semibold text-slate-700">
-          <span className="block mb-1">{accountType === "employer" ? "Work email" : "Email"}</span>
-          <Input name="email" type="email" required autoComplete="email" placeholder="name@domain.com" className={inputClass} />
+        <label className="text-xs font-medium text-fg-2">
+          <span className="block mb-1.5">{accountType === "employer" ? "Work email" : "Email address"}</span>
+          <Input 
+            name="email" 
+            type="email" 
+            required 
+            autoComplete="email" 
+            placeholder="name@company.com" 
+            className={inputClass} 
+          />
         </label>
-        <label className="text-xs font-semibold text-slate-700">
-          <span className="block mb-1">Password (8+ characters)</span>
-          <Input name="password" type="password" required minLength={8} autoComplete="new-password" placeholder="••••••••" className={inputClass} />
+        
+        <label className="text-xs font-medium text-fg-2">
+          <span className="block mb-1.5">Password (8+ characters)</span>
+          <Input 
+            name="password" 
+            type="password" 
+            required 
+            minLength={8} 
+            autoComplete="new-password" 
+            placeholder="••••••••" 
+            className={inputClass} 
+          />
         </label>
 
-        <Button type="submit" disabled={pending} className="w-full h-11 bg-[#6B47ED] hover:bg-[#5839C7] text-white font-bold mt-2 text-sm rounded-xl shadow-md">
-          {pending ? "Creating account..." : "Create account"}
+        <Button 
+          type="submit" 
+          disabled={pending} 
+          className="w-full h-11 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold mt-3 text-xs rounded-xl shadow-lg shadow-purple-500/25 transition-all"
+        >
+          {pending ? "Creating account..." : "Create Account"}
         </Button>
       </form>
 
-      <p className="text-center text-xs text-slate-500 mt-6">
+      <p className="text-center text-xs text-fg-3 mt-6">
         Already have an account?{" "}
-        <Link href="/login" className="text-[#6B47ED] font-semibold hover:underline">Log in</Link>
+        <Link href="/login" className="text-purple-400 font-semibold hover:text-purple-300 hover:underline">
+          Sign in
+        </Link>
       </p>
     </div>
   );

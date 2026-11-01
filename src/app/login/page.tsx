@@ -12,7 +12,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
   const initialError = sp.error === "confirmation_failed" ? "That confirmation link is invalid or has expired. Please sign in or sign up again." : undefined;
 
   return (
-    <div className="min-h-[calc(100vh-80px)] mt-20 flex items-center justify-center bg-[#f8f9fc] p-4 text-slate-900">
+    <div className="min-h-[calc(100vh-80px)] pt-24 pb-16 flex items-center justify-center bg-ink-0 px-4 text-white">
       <LoginForm next={next} initialError={initialError} />
     </div>
   );

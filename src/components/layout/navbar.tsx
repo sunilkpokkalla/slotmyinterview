@@ -4,40 +4,37 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { 
-  Menu, X, ChevronDown, ShieldCheck, GitBranch, Terminal, 
-  CodeSquare, Fingerprint, Search, Sparkles, 
-  Briefcase, Code2, Calendar, Zap, CheckCircle2, ArrowRight,
-  Shield
+  Menu, X, Search, Sparkles, 
+  Briefcase, Code2, LogOut, LayoutDashboard
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { signOut } from "@/app/actions/auth";
 import { Logo } from "@/components/ui/logo";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
-  const toggleDropdown = (menu: string) => {
-    setActiveDropdown(activeDropdown === menu ? null : menu);
-  };
+  const [signedIn, setSignedIn] = useState(false);
 
   // Client-side session check keeps public pages statically renderable.
-  const [signedIn, setSignedIn] = useState(false);
   useEffect(() => {
     try {
       const supabase = createSupabaseBrowserClient();
-      supabase.auth.getSession().then(({ data }: { data: { session: unknown } }) => setSignedIn(Boolean(data.session)));
-      const { data } = supabase.auth.onAuthStateChange((_e: unknown, session: unknown) => setSignedIn(Boolean(session)));
-      return () => data.subscription.unsubscribe();
+      supabase.auth.getSession().then(({ data }: { data: { session: unknown } }) => {
+        setSignedIn(Boolean(data?.session));
+      });
+      const { data } = supabase.auth.onAuthStateChange((_e: unknown, session: unknown) => {
+        setSignedIn(Boolean(session));
+      });
+      return () => data?.subscription?.unsubscribe();
     } catch {
       // Supabase env not configured: stay in signed-out state.
+      setSignedIn(false);
     }
   }, []);
 
   const closeAll = () => {
-    setActiveDropdown(null);
     setIsOpen(false);
   };
 
@@ -66,226 +63,45 @@ export function Navbar() {
 
           {/* Center Desktop Navigation Links */}
           <div className="hidden lg:flex items-center gap-1">
-            
-            {/* Dropdown 1: For Employers */}
-            <div className="relative" onMouseLeave={() => setActiveDropdown(null)}>
-              <button 
-                onMouseEnter={() => setActiveDropdown("employers")}
-                onClick={() => toggleDropdown("employers")}
-                className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-xs font-medium transition-all whitespace-nowrap ${
-                  activeDropdown === "employers" ? "text-white bg-white/10" : "text-fg-2 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                <Briefcase className="w-3.5 h-3.5 text-purple-400 shrink-0" />
-                <span>For Employers</span>
-                <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${activeDropdown === "employers" ? "rotate-180 text-white" : "text-fg-3"}`} />
-              </button>
-
-              <AnimatePresence>
-                {activeDropdown === "employers" && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute top-full left-0 mt-2 w-[540px] rounded-2xl border border-white/10 bg-ink-1/95 backdrop-blur-3xl shadow-2xl p-5 grid grid-cols-2 gap-4"
-                  >
-                    <div className="space-y-1">
-                      <div className="text-[10px] font-mono font-bold tracking-wider text-purple-400 uppercase px-2 py-1 flex items-center justify-between">
-                        <span>Vetting Engine</span>
-                        <span className="bg-purple-500/10 text-purple-400 text-[9px] px-1.5 py-0.5 rounded-full border border-purple-500/20">Verified</span>
-                      </div>
-
-                      <Link href="/platform/security" onClick={closeAll} className="group p-2.5 rounded-xl hover:bg-white/[0.04] transition-colors flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400 group-hover:bg-purple-500/20 transition-colors mt-0.5 shrink-0">
-                          <ShieldCheck className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-xs font-semibold text-white group-hover:text-purple-300 transition-colors whitespace-nowrap">
-                            AST Capability Audit
-                          </div>
-                          <div className="text-[11px] text-fg-3 leading-snug mt-0.5">
-                            Parse ASTs to verify algorithmic depth & system concurrency.
-                          </div>
-                        </div>
-                      </Link>
-
-                      <Link href="/platform/identity" onClick={closeAll} className="group p-2.5 rounded-xl hover:bg-white/[0.04] transition-colors flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500/20 transition-colors mt-0.5 shrink-0">
-                          <Fingerprint className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-xs font-semibold text-white group-hover:text-indigo-300 transition-colors whitespace-nowrap">
-                            Keystroke Biometrics
-                          </div>
-                          <div className="text-[11px] text-fg-3 leading-snug mt-0.5">
-                            Prevent proxy candidates and unauthorized AI copy-pasting.
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-
-                    <div className="space-y-1 border-l border-white/10 pl-4">
-                      <div className="text-[10px] font-mono font-bold tracking-wider text-emerald-400 uppercase px-2 py-1 flex items-center justify-between">
-                        <span>Hiring Speed</span>
-                        <span className="bg-emerald-500/10 text-emerald-400 text-[9px] px-1.5 py-0.5 rounded-full border border-emerald-500/20">Direct</span>
-                      </div>
-
-                      <Link href="/search" onClick={closeAll} className="group p-2.5 rounded-xl hover:bg-white/[0.04] transition-colors flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/20 transition-colors mt-0.5 shrink-0">
-                          <Calendar className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-xs font-semibold text-white group-hover:text-emerald-300 transition-colors whitespace-nowrap">
-                            Direct Calendar Slotting
-                          </div>
-                          <div className="text-[11px] text-fg-3 leading-snug mt-0.5">
-                            Book pre-vetted engineers directly on their open calendar.
-                          </div>
-                        </div>
-                      </Link>
-
-                      <Link href="/platform/github-sync" onClick={closeAll} className="group p-2.5 rounded-xl hover:bg-white/[0.04] transition-colors flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 group-hover:bg-cyan-500/20 transition-colors mt-0.5 shrink-0">
-                          <GitBranch className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-xs font-semibold text-white group-hover:text-cyan-300 transition-colors whitespace-nowrap">
-                            ATS Webhook Sync
-                          </div>
-                          <div className="text-[11px] text-fg-3 leading-snug mt-0.5">
-                            Integrate proof scores with Greenhouse, Lever, and Ashby.
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-
-                    <div className="col-span-2 mt-2 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-fg-3 px-1">
-                      <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> 99.8% Fraud-Free Guarantee
-                      </span>
-                      <Link href="/search" onClick={closeAll} className="text-purple-400 hover:underline flex items-center gap-1 font-sans font-medium">
-                        Browse Vetted Engineers <ArrowRight className="w-3 h-3" />
-                      </Link>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Dropdown 2: For Engineers */}
-            <div className="relative" onMouseLeave={() => setActiveDropdown(null)}>
-              <button 
-                onMouseEnter={() => setActiveDropdown("engineers")}
-                onClick={() => toggleDropdown("engineers")}
-                className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-xs font-medium transition-all whitespace-nowrap ${
-                  activeDropdown === "engineers" ? "text-white bg-white/10" : "text-fg-2 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                <Code2 className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                <span>For Developers</span>
-                <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${activeDropdown === "engineers" ? "rotate-180 text-white" : "text-fg-3"}`} />
-              </button>
-
-              <AnimatePresence>
-                {activeDropdown === "engineers" && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute top-full left-0 mt-2 w-[500px] rounded-2xl border border-white/10 bg-ink-1/95 backdrop-blur-3xl shadow-2xl p-5 grid grid-cols-2 gap-4"
-                  >
-                    <div className="space-y-1">
-                      <div className="text-[10px] font-mono font-bold tracking-wider text-indigo-400 uppercase px-2 py-1">
-                        Developer Passport
-                      </div>
-
-                      <Link href="/platform/portfolios" onClick={closeAll} className="group p-2.5 rounded-xl hover:bg-white/[0.04] transition-colors flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500/20 transition-colors mt-0.5 shrink-0">
-                          <CodeSquare className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-xs font-semibold text-white group-hover:text-indigo-300 transition-colors whitespace-nowrap">
-                            Living Capability Profile
-                          </div>
-                          <div className="text-[11px] text-fg-3 leading-snug mt-0.5">
-                            Replace static resumes with indexed AST repo metrics.
-                          </div>
-                        </div>
-                      </Link>
-
-                      <Link href="/platform/challenges" onClick={closeAll} className="group p-2.5 rounded-xl hover:bg-white/[0.04] transition-colors flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400 group-hover:bg-purple-500/20 transition-colors mt-0.5 shrink-0">
-                          <Terminal className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-xs font-semibold text-white group-hover:text-purple-300 transition-colors whitespace-nowrap">
-                            Interactive Sandboxes
-                          </div>
-                          <div className="text-[11px] text-fg-3 leading-snug mt-0.5">
-                            Solve real production issues in Dockerized environments.
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-
-                    <div className="space-y-1 border-l border-white/10 pl-4">
-                      <div className="text-[10px] font-mono font-bold tracking-wider text-pink-400 uppercase px-2 py-1">
-                        Monetize Skill
-                      </div>
-
-                      <Link href="/platform/how-it-works" onClick={closeAll} className="group p-2.5 rounded-xl hover:bg-white/[0.04] transition-colors flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-pink-500/10 text-pink-400 group-hover:bg-pink-500/20 transition-colors mt-0.5 shrink-0">
-                          <Zap className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-xs font-semibold text-white group-hover:text-pink-300 transition-colors whitespace-nowrap">
-                            Direct Offer Slots
-                          </div>
-                          <div className="text-[11px] text-fg-3 leading-snug mt-0.5">
-                            Publish interview slots and receive inbound offers directly.
-                          </div>
-                        </div>
-                      </Link>
-
-                      <Link href="/platform/how-it-works#proof" onClick={closeAll} className="group p-2.5 rounded-xl hover:bg-white/[0.04] transition-colors flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400 group-hover:bg-amber-500/20 transition-colors mt-0.5 shrink-0">
-                          <Shield className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-xs font-semibold text-white group-hover:text-amber-300 transition-colors whitespace-nowrap">
-                            GPG Signed Ledger
-                          </div>
-                          <div className="text-[11px] text-fg-3 leading-snug mt-0.5">
-                            Earn cryptographic proof of authorship for your commits.
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Direct Links */}
-            <Link href="/search" className="h-8 px-3 rounded-full inline-flex items-center gap-1.5 text-xs font-medium text-fg-2 hover:text-white hover:bg-white/5 transition-all whitespace-nowrap">
+            <Link 
+              href="/search" 
+              className="h-8 px-3 rounded-full inline-flex items-center gap-1.5 text-xs font-medium text-fg-2 hover:text-white hover:bg-white/5 transition-all whitespace-nowrap"
+            >
               <span>Verified Talent</span>
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             </Link>
             
-            <Link href="/pricing" className="h-8 px-3 rounded-full inline-flex items-center text-xs font-medium text-fg-2 hover:text-white hover:bg-white/5 transition-all whitespace-nowrap">
+            <Link 
+              href="/#how-it-works" 
+              className="h-8 px-3 rounded-full inline-flex items-center text-xs font-medium text-fg-2 hover:text-white hover:bg-white/5 transition-all whitespace-nowrap"
+            >
+              How It Works
+            </Link>
+
+            <Link 
+              href="/#features" 
+              className="h-8 px-3 rounded-full inline-flex items-center text-xs font-medium text-fg-2 hover:text-white hover:bg-white/5 transition-all whitespace-nowrap"
+            >
+              Features
+            </Link>
+
+            <Link 
+              href="/pricing" 
+              className="h-8 px-3 rounded-full inline-flex items-center text-xs font-medium text-fg-2 hover:text-white hover:bg-white/5 transition-all whitespace-nowrap"
+            >
               Pricing
             </Link>
 
-            <Link href="/blog" className="h-8 px-3 rounded-full inline-flex items-center text-xs font-medium text-fg-2 hover:text-white hover:bg-white/5 transition-all whitespace-nowrap">
+            <Link 
+              href="/blog" 
+              className="h-8 px-3 rounded-full inline-flex items-center text-xs font-medium text-fg-2 hover:text-white hover:bg-white/5 transition-all whitespace-nowrap"
+            >
               Blog
             </Link>
           </div>
 
-          {/* Right: Search Pill & CTA */}
+          {/* Right: Search Pill & Auth Actions */}
           <div className="hidden lg:flex items-center gap-2.5">
-            
             {/* Quick Search Shortcut Trigger Pill */}
             <button
               onClick={() => setIsSearchOpen(true)}
@@ -296,26 +112,45 @@ export function Navbar() {
               <kbd className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded text-fg-2 font-mono">⌘K</kbd>
             </button>
 
-            <Link href="/dashboard" className="text-xs font-semibold text-purple-400 hover:text-purple-300 transition-colors px-3 py-1.5 rounded-full hover:bg-purple-500/10 border border-purple-500/20 whitespace-nowrap">
-              Dashboard
-            </Link>
-
-            {!signedIn && (
-              <Link href="/login" className="text-xs font-medium text-fg-2 hover:text-white transition-colors px-3 py-1.5 rounded-full hover:bg-white/5 whitespace-nowrap">
-                Sign in
-              </Link>
-            )}
-
-            {/* Premium Button-in-Button CTA */}
-            <Link 
-              href="/signup" 
-              className="group relative inline-flex items-center gap-2 h-8.5 pl-4 pr-1.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-xs font-semibold text-white shadow-lg shadow-purple-500/25 transition-all active:scale-[0.98] whitespace-nowrap"
-            >
-              <span>Slot an Interview</span>
-              <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
-                <Sparkles className="w-3 h-3 text-amber-300" />
+            {signedIn ? (
+              <div className="flex items-center gap-2">
+                <Link 
+                  href="/dashboard" 
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-300 hover:text-white transition-colors px-3 py-1.5 rounded-full bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 whitespace-nowrap"
+                >
+                  <LayoutDashboard className="w-3.5 h-3.5" />
+                  <span>Dashboard</span>
+                </Link>
+                <form action={signOut}>
+                  <button
+                    type="submit"
+                    className="p-1.5 rounded-full text-fg-3 hover:text-rose-400 hover:bg-white/5 transition-colors"
+                    title="Sign out"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </form>
               </div>
-            </Link>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link 
+                  href="/login" 
+                  className="text-xs font-medium text-fg-2 hover:text-white transition-colors px-3 py-1.5 rounded-full hover:bg-white/5 whitespace-nowrap"
+                >
+                  Sign in
+                </Link>
+
+                <Link 
+                  href="/signup" 
+                  className="group relative inline-flex items-center gap-2 h-8.5 pl-4 pr-1.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-xs font-semibold text-white shadow-lg shadow-purple-500/25 transition-all active:scale-[0.98] whitespace-nowrap"
+                >
+                  <span>Slot an Interview</span>
+                  <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                    <Sparkles className="w-3 h-3 text-amber-300" />
+                  </div>
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Mobile Actions */}
@@ -346,59 +181,89 @@ export function Navbar() {
             exit={{ opacity: 0, y: -10 }}
             className="lg:hidden fixed top-20 inset-x-4 z-40 rounded-2xl border border-white/10 bg-ink-1/95 backdrop-blur-3xl shadow-2xl p-6 overflow-hidden max-h-[85vh] overflow-y-auto"
           >
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
+              <Link 
+                href="/search" 
+                onClick={closeAll} 
+                className="text-sm font-medium text-white flex items-center justify-between py-2 border-b border-white/5"
+              >
+                <span>Browse Verified Talent</span>
+                <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-mono">Live</span>
+              </Link>
               
-              {/* Employers Section */}
-              <div>
-                <div className="text-[10px] font-mono font-bold text-purple-400 uppercase mb-2">For Employers</div>
-                <div className="flex flex-col gap-2 pl-2">
-                  <Link href="/search" onClick={closeAll} className="text-sm font-medium text-white flex items-center justify-between py-1">
-                    <span>Browse Verified Candidates</span>
-                    <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-mono">Live Ledger</span>
-                  </Link>
-                  <Link href="/platform/security" onClick={closeAll} className="text-sm font-medium text-fg-2 hover:text-white py-1">
-                    AST Code Complexity Audit
-                  </Link>
-                  <Link href="/platform/identity" onClick={closeAll} className="text-sm font-medium text-fg-2 hover:text-white py-1">
-                    Keystroke Biometric Checks
-                  </Link>
-                  <Link href="/platform/github-sync" onClick={closeAll} className="text-sm font-medium text-fg-2 hover:text-white py-1">
-                    Greenhouse & Lever ATS Sync
-                  </Link>
-                </div>
-              </div>
-
-              <hr className="border-white/10" />
-
-              {/* Developers Section */}
-              <div>
-                <div className="text-[10px] font-mono font-bold text-indigo-400 uppercase mb-2">For Engineers</div>
-                <div className="flex flex-col gap-2 pl-2">
-                  <Link href="/platform/portfolios" onClick={closeAll} className="text-sm font-medium text-fg-2 hover:text-white py-1">
-                    Living Capability Profile
-                  </Link>
-                  <Link href="/platform/challenges" onClick={closeAll} className="text-sm font-medium text-fg-2 hover:text-white py-1">
-                    Docker Production Sandboxes
-                  </Link>
-                  <Link href="/platform/how-it-works" onClick={closeAll} className="text-sm font-medium text-fg-2 hover:text-white py-1">
-                    Direct Offer Scheduling
-                  </Link>
-                </div>
-              </div>
-
-              <hr className="border-white/10" />
-
-              <div className="flex flex-col gap-2">
-                <Link href="/pricing" onClick={closeAll} className="text-sm font-medium text-fg-2 hover:text-white py-1">Pricing</Link>
-                <Link href="/blog" onClick={closeAll} className="text-sm font-medium text-fg-2 hover:text-white py-1">Blog</Link>
-                <Link href="/login" onClick={closeAll} className="text-sm font-medium text-fg-2 hover:text-white py-1">Sign in</Link>
-              </div>
-
-              <Link href="/signup" onClick={closeAll} className="btn bg-gradient-to-r from-purple-600 to-indigo-600 text-white w-full text-center flex items-center justify-center gap-2 py-3 rounded-full font-semibold shadow-lg shadow-purple-500/20 mt-2">
-                <Sparkles className="w-4 h-4 text-amber-300" />
-                <span>Slot an Interview</span>
+              <Link 
+                href="/#how-it-works" 
+                onClick={closeAll} 
+                className="text-sm font-medium text-fg-2 hover:text-white py-2 border-b border-white/5"
+              >
+                How It Works
               </Link>
 
+              <Link 
+                href="/#features" 
+                onClick={closeAll} 
+                className="text-sm font-medium text-fg-2 hover:text-white py-2 border-b border-white/5"
+              >
+                Features
+              </Link>
+
+              <Link 
+                href="/pricing" 
+                onClick={closeAll} 
+                className="text-sm font-medium text-fg-2 hover:text-white py-2 border-b border-white/5"
+              >
+                Pricing
+              </Link>
+
+              <Link 
+                href="/blog" 
+                onClick={closeAll} 
+                className="text-sm font-medium text-fg-2 hover:text-white py-2 border-b border-white/5"
+              >
+                Blog
+              </Link>
+
+              <div className="pt-2 flex flex-col gap-2">
+                {signedIn ? (
+                  <>
+                    <Link 
+                      href="/dashboard" 
+                      onClick={closeAll} 
+                      className="btn bg-purple-600/20 border border-purple-500/30 text-purple-300 w-full text-center flex items-center justify-center gap-2 py-3 rounded-full font-semibold"
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      <span>Open Dashboard</span>
+                    </Link>
+                    <form action={signOut} className="w-full">
+                      <button 
+                        type="submit" 
+                        onClick={closeAll}
+                        className="w-full text-center text-xs text-fg-3 hover:text-rose-400 py-2 font-medium"
+                      >
+                        Sign out
+                      </button>
+                    </form>
+                  </>
+                ) : (
+                  <>
+                    <Link 
+                      href="/login" 
+                      onClick={closeAll} 
+                      className="text-sm font-medium text-center text-fg-2 hover:text-white py-2"
+                    >
+                      Sign in
+                    </Link>
+                    <Link 
+                      href="/signup" 
+                      onClick={closeAll} 
+                      className="btn bg-gradient-to-r from-purple-600 to-indigo-600 text-white w-full text-center flex items-center justify-center gap-2 py-3 rounded-full font-semibold shadow-lg shadow-purple-500/20"
+                    >
+                      <Sparkles className="w-4 h-4 text-amber-300" />
+                      <span>Slot an Interview</span>
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
@@ -451,9 +316,15 @@ export function Navbar() {
                   ))}
                 </div>
 
-                <div className="mt-2 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-fg-3 font-mono">
-                  <span>Press <kbd className="bg-white/10 px-1.5 py-0.5 rounded text-fg-2 font-mono">ENTER</kbd> to search ledger</span>
-                  <span className="text-purple-400 font-semibold">945+ Verified Profiles</span>
+                <div className="mt-2 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-fg-3">
+                  <span>Press <kbd className="bg-white/10 px-1 py-0.5 rounded font-mono text-[10px]">ENTER</kbd> to search</span>
+                  <Link 
+                    href={searchQuery ? `/search?q=${encodeURIComponent(searchQuery)}` : "/search"} 
+                    onClick={() => setIsSearchOpen(false)}
+                    className="text-purple-400 hover:text-purple-300 font-medium"
+                  >
+                    View all verified candidates →
+                  </Link>
                 </div>
               </div>
             </motion.div>
@@ -463,4 +334,3 @@ export function Navbar() {
     </>
   );
 }
-
