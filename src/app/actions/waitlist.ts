@@ -253,3 +253,4 @@ export async function getWaitlistByCode(code: string) {
     return null;
   }
 }
+

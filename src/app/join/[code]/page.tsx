@@ -47,3 +47,4 @@ export default async function JoinPage({ params }: Props) {
   // Redirect to homepage with referral code query param to activate priority boost
   redirect(`/#waitlist?ref=${encodeURIComponent(code)}`);
 }
+
