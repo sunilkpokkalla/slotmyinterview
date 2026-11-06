@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { 
   Menu, X, Search, Sparkles, 
-  Briefcase, Code2, LogOut, LayoutDashboard
+  Briefcase, Code2, LogOut, LayoutDashboard, Flame
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { signOut } from "@/app/actions/auth";
@@ -63,6 +63,14 @@ export function Navbar() {
 
           {/* Center Desktop Navigation Links */}
           <div className="hidden lg:flex items-center gap-1">
+            <Link 
+              href="/#waitlist" 
+              className="h-8 px-3 rounded-full inline-flex items-center gap-1.5 text-xs font-semibold text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 transition-all whitespace-nowrap shadow-[0_0_15px_rgba(245,158,11,0.15)]"
+            >
+              <Flame className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+              <span>VIP Waitlist</span>
+            </Link>
+
             <Link 
               href="/search" 
               className="h-8 px-3 rounded-full inline-flex items-center gap-1.5 text-xs font-medium text-fg-2 hover:text-white hover:bg-white/5 transition-all whitespace-nowrap"
@@ -182,6 +190,18 @@ export function Navbar() {
             className="lg:hidden fixed top-20 inset-x-4 z-40 rounded-2xl border border-white/10 bg-ink-1/95 backdrop-blur-3xl shadow-2xl p-6 overflow-hidden max-h-[85vh] overflow-y-auto"
           >
             <div className="flex flex-col gap-3">
+              <Link 
+                href="/#waitlist" 
+                onClick={closeAll} 
+                className="text-sm font-semibold text-amber-300 flex items-center justify-between py-2 border-b border-white/5"
+              >
+                <span className="flex items-center gap-2">
+                  <Flame className="w-4 h-4 text-amber-400 animate-pulse" />
+                  <span>Join VIP Waitlist</span>
+                </span>
+                <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-mono">Jump Queue</span>
+              </Link>
+
               <Link 
                 href="/search" 
                 onClick={closeAll} 

@@ -430,3 +430,28 @@ model Lead {
   status    LeadStatus @default(NEW)
   createdAt DateTime   @default(now())
 }
+
+enum WaitlistRole {
+  ENGINEER
+  EMPLOYER
+}
+
+model WaitlistEntry {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  fullName     String
+  role         WaitlistRole  @default(ENGINEER)
+  username     String?       // Reserved /u/handle for engineers
+  companyName  String?       // Company name for employers
+  referralCode String        @unique
+  referredById String?
+  referredBy   WaitlistEntry?  @relation("WaitlistReferrals", fields: [referredById], references: [id], onDelete: SetNull)
+  referrals    WaitlistEntry[] @relation("WaitlistReferrals")
+  points       Int           @default(0) // Referral boost points (50 per successful invite)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([referralCode])
+  @@index([email])
+}
+

@@ -70,7 +70,7 @@ export function Hero() {
           <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-xs">
             <span className="text-fg-3">Are you a software engineer?</span>
             <Link
-              href="/signup"
+              href="#waitlist"
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-medium border border-purple-500/20 transition-all hover:scale-[1.02]"
             >
               <Sparkles className="w-3.5 h-3.5 text-purple-400" />
